@@ -25,7 +25,7 @@ import {
  */
 
 export interface CameraStartOptions {
-  deviceId?: string;
+  deviceId?: string | undefined;
 }
 
 export class CameraPermissionError extends Error {}
@@ -126,10 +126,10 @@ function simulateBox(): BoundingBox {
 }
 
 interface DetectFaceArgs {
-  frameDataUrl?: string | null;
-  backendUrl?: string;
+  frameDataUrl?: string | null | undefined;
+  backendUrl?: string | undefined;
   demoMode: boolean;
-  signal?: AbortSignal;
+  signal?: AbortSignal | undefined;
 }
 
 async function detectFace({
@@ -171,10 +171,10 @@ async function detectFace({
 /* ------------------------------------------------------------ preprocessing */
 
 interface PreprocessArgs {
-  video?: HTMLVideoElement | null;
+  video?: HTMLVideoElement | null | undefined;
   box: BoundingBox | null;
   /** Target square size expected by the selected model. */
-  targetSize?: number;
+  targetSize?: number | undefined;
 }
 
 /**
@@ -239,12 +239,12 @@ function simulateProbabilities(dominant: Emotion): Record<Emotion, number> {
 }
 
 interface PredictArgs {
-  faceDataUrl?: string | null;
-  backendUrl?: string;
+  faceDataUrl?: string | null | undefined;
+  backendUrl?: string | undefined;
   demoMode: boolean;
   /** Bias the simulation so demo emotions persist for a few cycles. */
-  preferredEmotion?: Emotion | null;
-  signal?: AbortSignal;
+  preferredEmotion?: Emotion | null | undefined;
+  signal?: AbortSignal | undefined;
 }
 
 async function predictEmotion({
