@@ -15,6 +15,7 @@ import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as HistoryRouteImport } from './routes/history'
 import { Route as ImageProcessingRouteImport } from './routes/image-processing'
 import { Route as LiveRouteImport } from './routes/live'
+import { Route as MetricsRouteImport } from './routes/metrics'
 import { Route as WorkflowRouteImport } from './routes/workflow'
 
 const IndexRoute = IndexRouteImport.update({
@@ -47,6 +48,11 @@ const LiveRoute = LiveRouteImport.update({
   path: '/live',
   getParentRoute: () => rootRouteImport,
 } as any)
+const MetricsRoute = MetricsRouteImport.update({
+  id: '/metrics',
+  path: '/metrics',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const WorkflowRoute = WorkflowRouteImport.update({
   id: '/workflow',
   path: '/workflow',
@@ -60,6 +66,7 @@ export interface FileRoutesByFullPath {
   '/history': typeof HistoryRoute
   '/image-processing': typeof ImageProcessingRoute
   '/live': typeof LiveRoute
+  '/metrics': typeof MetricsRoute
   '/workflow': typeof WorkflowRoute
 }
 export interface FileRoutesByTo {
@@ -69,6 +76,7 @@ export interface FileRoutesByTo {
   '/history': typeof HistoryRoute
   '/image-processing': typeof ImageProcessingRoute
   '/live': typeof LiveRoute
+  '/metrics': typeof MetricsRoute
   '/workflow': typeof WorkflowRoute
 }
 export interface FileRoutesById {
@@ -79,6 +87,7 @@ export interface FileRoutesById {
   '/history': typeof HistoryRoute
   '/image-processing': typeof ImageProcessingRoute
   '/live': typeof LiveRoute
+  '/metrics': typeof MetricsRoute
   '/workflow': typeof WorkflowRoute
 }
 export interface FileRouteTypes {
@@ -90,6 +99,7 @@ export interface FileRouteTypes {
     | '/history'
     | '/image-processing'
     | '/live'
+    | '/metrics'
     | '/workflow'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -99,6 +109,7 @@ export interface FileRouteTypes {
     | '/history'
     | '/image-processing'
     | '/live'
+    | '/metrics'
     | '/workflow'
   id:
     | '__root__'
@@ -108,6 +119,7 @@ export interface FileRouteTypes {
     | '/history'
     | '/image-processing'
     | '/live'
+    | '/metrics'
     | '/workflow'
   fileRoutesById: FileRoutesById
 }
@@ -118,6 +130,7 @@ export interface RootRouteChildren {
   HistoryRoute: typeof HistoryRoute
   ImageProcessingRoute: typeof ImageProcessingRoute
   LiveRoute: typeof LiveRoute
+  MetricsRoute: typeof MetricsRoute
   WorkflowRoute: typeof WorkflowRoute
 }
 
@@ -165,6 +178,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LiveRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/metrics': {
+      id: '/metrics'
+      path: '/metrics'
+      fullPath: '/metrics'
+      preLoaderRoute: typeof MetricsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/workflow': {
       id: '/workflow'
       path: '/workflow'
@@ -182,6 +202,7 @@ const rootRouteChildren: RootRouteChildren = {
   HistoryRoute: HistoryRoute,
   ImageProcessingRoute: ImageProcessingRoute,
   LiveRoute: LiveRoute,
+  MetricsRoute: MetricsRoute,
   WorkflowRoute: WorkflowRoute,
 }
 export const routeTree = rootRouteImport
