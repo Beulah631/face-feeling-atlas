@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ApplicationsRouteImport } from './routes/applications'
 import { Route as ArchitectureRouteImport } from './routes/architecture'
+import { Route as AssessmentRouteImport } from './routes/assessment'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as DatasetRouteImport } from './routes/dataset'
 import { Route as HistoryRouteImport } from './routes/history'
@@ -33,6 +34,11 @@ const ApplicationsRoute = ApplicationsRouteImport.update({
 const ArchitectureRoute = ArchitectureRouteImport.update({
   id: '/architecture',
   path: '/architecture',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AssessmentRoute = AssessmentRouteImport.update({
+  id: '/assessment',
+  path: '/assessment',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DashboardRoute = DashboardRouteImport.update({
@@ -75,6 +81,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/applications': typeof ApplicationsRoute
   '/architecture': typeof ArchitectureRoute
+  '/assessment': typeof AssessmentRoute
   '/dashboard': typeof DashboardRoute
   '/dataset': typeof DatasetRoute
   '/history': typeof HistoryRoute
@@ -87,6 +94,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/applications': typeof ApplicationsRoute
   '/architecture': typeof ArchitectureRoute
+  '/assessment': typeof AssessmentRoute
   '/dashboard': typeof DashboardRoute
   '/dataset': typeof DatasetRoute
   '/history': typeof HistoryRoute
@@ -100,6 +108,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/applications': typeof ApplicationsRoute
   '/architecture': typeof ArchitectureRoute
+  '/assessment': typeof AssessmentRoute
   '/dashboard': typeof DashboardRoute
   '/dataset': typeof DatasetRoute
   '/history': typeof HistoryRoute
@@ -114,6 +123,7 @@ export interface FileRouteTypes {
     | '/'
     | '/applications'
     | '/architecture'
+    | '/assessment'
     | '/dashboard'
     | '/dataset'
     | '/history'
@@ -126,6 +136,7 @@ export interface FileRouteTypes {
     | '/'
     | '/applications'
     | '/architecture'
+    | '/assessment'
     | '/dashboard'
     | '/dataset'
     | '/history'
@@ -138,6 +149,7 @@ export interface FileRouteTypes {
     | '/'
     | '/applications'
     | '/architecture'
+    | '/assessment'
     | '/dashboard'
     | '/dataset'
     | '/history'
@@ -151,6 +163,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   ApplicationsRoute: typeof ApplicationsRoute
   ArchitectureRoute: typeof ArchitectureRoute
+  AssessmentRoute: typeof AssessmentRoute
   DashboardRoute: typeof DashboardRoute
   DatasetRoute: typeof DatasetRoute
   HistoryRoute: typeof HistoryRoute
@@ -181,6 +194,13 @@ declare module '@tanstack/react-router' {
       path: '/architecture'
       fullPath: '/architecture'
       preLoaderRoute: typeof ArchitectureRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/assessment': {
+      id: '/assessment'
+      path: '/assessment'
+      fullPath: '/assessment'
+      preLoaderRoute: typeof AssessmentRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/dashboard': {
@@ -239,6 +259,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ApplicationsRoute: ApplicationsRoute,
   ArchitectureRoute: ArchitectureRoute,
+  AssessmentRoute: AssessmentRoute,
   DashboardRoute: DashboardRoute,
   DatasetRoute: DatasetRoute,
   HistoryRoute: HistoryRoute,
