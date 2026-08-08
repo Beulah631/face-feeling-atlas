@@ -27,7 +27,7 @@ export const Route = createFileRoute("/live")({
       },
     ],
   }),
-  component: LiveAnalysis;
+  component: LiveAnalysis,
 });
 
 function LiveAnalysis() {
