@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ArchitectureRouteImport } from './routes/architecture'
 import { Route as DashboardRouteImport } from './routes/dashboard'
+import { Route as DatasetRouteImport } from './routes/dataset'
 import { Route as HistoryRouteImport } from './routes/history'
 import { Route as ImageProcessingRouteImport } from './routes/image-processing'
 import { Route as LiveRouteImport } from './routes/live'
@@ -31,6 +32,11 @@ const ArchitectureRoute = ArchitectureRouteImport.update({
 const DashboardRoute = DashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DatasetRoute = DatasetRouteImport.update({
+  id: '/dataset',
+  path: '/dataset',
   getParentRoute: () => rootRouteImport,
 } as any)
 const HistoryRoute = HistoryRouteImport.update({
@@ -63,6 +69,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/architecture': typeof ArchitectureRoute
   '/dashboard': typeof DashboardRoute
+  '/dataset': typeof DatasetRoute
   '/history': typeof HistoryRoute
   '/image-processing': typeof ImageProcessingRoute
   '/live': typeof LiveRoute
@@ -73,6 +80,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/architecture': typeof ArchitectureRoute
   '/dashboard': typeof DashboardRoute
+  '/dataset': typeof DatasetRoute
   '/history': typeof HistoryRoute
   '/image-processing': typeof ImageProcessingRoute
   '/live': typeof LiveRoute
@@ -84,6 +92,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/architecture': typeof ArchitectureRoute
   '/dashboard': typeof DashboardRoute
+  '/dataset': typeof DatasetRoute
   '/history': typeof HistoryRoute
   '/image-processing': typeof ImageProcessingRoute
   '/live': typeof LiveRoute
@@ -96,6 +105,7 @@ export interface FileRouteTypes {
     | '/'
     | '/architecture'
     | '/dashboard'
+    | '/dataset'
     | '/history'
     | '/image-processing'
     | '/live'
@@ -106,6 +116,7 @@ export interface FileRouteTypes {
     | '/'
     | '/architecture'
     | '/dashboard'
+    | '/dataset'
     | '/history'
     | '/image-processing'
     | '/live'
@@ -116,6 +127,7 @@ export interface FileRouteTypes {
     | '/'
     | '/architecture'
     | '/dashboard'
+    | '/dataset'
     | '/history'
     | '/image-processing'
     | '/live'
@@ -127,6 +139,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   ArchitectureRoute: typeof ArchitectureRoute
   DashboardRoute: typeof DashboardRoute
+  DatasetRoute: typeof DatasetRoute
   HistoryRoute: typeof HistoryRoute
   ImageProcessingRoute: typeof ImageProcessingRoute
   LiveRoute: typeof LiveRoute
@@ -155,6 +168,13 @@ declare module '@tanstack/react-router' {
       path: '/dashboard'
       fullPath: '/dashboard'
       preLoaderRoute: typeof DashboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dataset': {
+      id: '/dataset'
+      path: '/dataset'
+      fullPath: '/dataset'
+      preLoaderRoute: typeof DatasetRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/history': {
@@ -199,6 +219,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ArchitectureRoute: ArchitectureRoute,
   DashboardRoute: DashboardRoute,
+  DatasetRoute: DatasetRoute,
   HistoryRoute: HistoryRoute,
   ImageProcessingRoute: ImageProcessingRoute,
   LiveRoute: LiveRoute,
