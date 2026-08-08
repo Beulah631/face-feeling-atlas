@@ -41,7 +41,7 @@ async function postJson<T>(url: string, body: unknown, signal?: AbortSignal): Pr
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(body),
-    signal,
+    signal: signal ?? null,
   });
   if (!res.ok) throw new Error(`Request failed (${res.status}) for ${url}`);
   return (await res.json()) as T;
