@@ -67,6 +67,7 @@ export interface FerState {
   inferenceSource: "demo" | "backend";
 
   history: Observation[];
+  recordObservation: (observation: Observation) => void;
   clearHistory: () => void;
   alert: MonitoringAlert | null;
   dismissAlert: () => void;
@@ -188,6 +189,22 @@ export function FerProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => () => emotionService.stopCamera(streamRef.current), []);
 
+  const recordObservation = useCallback((observation: Observation) => {
+    const s = settingsRef.current;
+    setHistory((prev) => {
+      const next = emotionService.appendObservation(prev, observation);
+      if (s.alertsEnabled) {
+        const generated = emotionService.generateAlert({
+          history: next,
+          thresholdPct: s.confidenceThreshold,
+          consecutive: s.consecutiveObservations,
+        });
+        if (generated) setAlert((current) => (current?.id === generated.id ? current : generated));
+      }
+      return next;
+    });
+  }, []);
+
   /* ------------------------------------------------------ analysis cycle */
   const runCycle = useCallback(async () => {
     if (runningRef.current) return;
@@ -206,6 +223,8 @@ export function FerProvider({ children }: { children: ReactNode }) {
       setStage("detect", "processing");
       const detection = await emotionService.detectFace({
         frameDataUrl: frame?.dataUrl ?? null,
+        frameWidth: frame?.width,
+        frameHeight: frame?.height,
         backendUrl: s.backendUrl,
         demoMode: s.demoMode,
       });
@@ -268,24 +287,13 @@ export function FerProvider({ children }: { children: ReactNode }) {
         source: prediction.source,
       };
 
-      setHistory((prev) => {
-        const next = emotionService.appendObservation(prev, observation);
-        if (s.alertsEnabled) {
-          const generated = emotionService.generateAlert({
-            history: next,
-            thresholdPct: s.confidenceThreshold,
-            consecutive: s.consecutiveObservations,
-          });
-          if (generated) setAlert((current) => (current?.id === generated.id ? current : generated));
-        }
-        return next;
-      });
+      recordObservation(observation);
     } catch {
       setStages(EMPTY_STAGES);
     } finally {
       runningRef.current = false;
     }
-  }, []);
+  }, [recordObservation]);
 
   useEffect(() => {
     if (!analyzing || !cameraActive) return;
@@ -338,6 +346,7 @@ export function FerProvider({ children }: { children: ReactNode }) {
       probabilities,
       inferenceSource: settings.demoMode || !settings.backendUrl ? "demo" : "backend",
       history,
+      recordObservation,
       clearHistory,
       alert,
       dismissAlert: () => setAlert(null),
@@ -367,6 +376,7 @@ export function FerProvider({ children }: { children: ReactNode }) {
       confidence,
       probabilities,
       history,
+      recordObservation,
       clearHistory,
       alert,
       sessionStart,

@@ -135,7 +135,7 @@ function SettingsPage() {
           title="Model mode / inference backend"
           icon={Server}
           className="lg:col-span-2"
-          footer="Turn Demo Mode off and set this URL to route detection and classification to your own Python/FastAPI service (POST /api/detect-face and POST /api/predict-emotion)."
+          footer="Add your Python inference service URL to enable backend analysis. Image requests are sent as multipart/form-data using the image field to /api/detect-face and /api/predict-emotion."
         >
           <label className="block text-sm">
             <span className="text-[11px] tracking-widest text-muted-foreground uppercase">

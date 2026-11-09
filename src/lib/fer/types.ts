@@ -31,6 +31,8 @@ export interface FaceDetectionResult {
   /** null when no real detector produced a score (demo mode). */
   confidence: number | null;
   box: BoundingBox | null;
+  /** All detected face boxes, normalized to the source image dimensions. */
+  boxes?: BoundingBox[];
   source: InferenceSource;
 }
 
