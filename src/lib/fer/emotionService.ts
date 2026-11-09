@@ -36,15 +36,64 @@ function randomBetween(min: number, max: number) {
   return min + Math.random() * (max - min);
 }
 
-async function postJson<T>(url: string, body: unknown, signal?: AbortSignal): Promise<T> {
+async function postImage<T>(url: string, image: Blob | string, signal?: AbortSignal): Promise<T> {
+  const imageBlob = typeof image === "string" ? await (await fetch(image)).blob() : image;
+  const formData = new FormData();
+  const filename = imageBlob.type === "image/png" ? "image.png" : "image.jpg";
+  formData.append("image", imageBlob, filename);
   const res = await fetch(url, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body),
+    body: formData,
     signal: signal ?? null,
   });
-  if (!res.ok) throw new Error(`Request failed (${res.status}) for ${url}`);
-  return (await res.json()) as T;
+  if (!res.ok) {
+    const detail = await res.text().catch(() => "");
+    throw new Error(detail || `Inference service returned HTTP ${res.status}.`);
+  }
+  try {
+    return (await res.json()) as T;
+  } catch {
+    throw new Error("Inference service returned an unreadable response.");
+  }
+}
+
+function normalizeBoxes(
+  boxes: BoundingBox[],
+  frameWidth?: number,
+  frameHeight?: number,
+): BoundingBox[] {
+  return boxes.flatMap((box) => {
+    const values = [box.x, box.y, box.width, box.height];
+    if (!values.every((value) => Number.isFinite(value) && value >= 0)) return [];
+    const pixelCoordinates = values.some((value) => value > 1);
+    const width = pixelCoordinates ? frameWidth : 1;
+    const height = pixelCoordinates ? frameHeight : 1;
+    if (!width || !height) return [];
+    const normalized = {
+      x: box.x / width,
+      y: box.y / height,
+      width: box.width / width,
+      height: box.height / height,
+    };
+    if (
+      normalized.x >= 1 || normalized.y >= 1 ||
+      normalized.width <= 0 || normalized.height <= 0
+    ) return [];
+    return [{
+      x: Math.max(0, Math.min(normalized.x, 1)),
+      y: Math.max(0, Math.min(normalized.y, 1)),
+      width: Math.max(0, Math.min(normalized.width, 1 - normalized.x)),
+      height: Math.max(0, Math.min(normalized.height, 1 - normalized.y)),
+    }];
+  });
+}
+
+function asEmotion(value: unknown): Emotion {
+  if (typeof value === "string") {
+    const emotion = EMOTIONS.find((item) => item.toLowerCase() === value.toLowerCase());
+    if (emotion) return emotion;
+  }
+  throw new Error("Inference service returned an unsupported emotion label.");
 }
 
 /* ------------------------------------------------------------------ camera */
@@ -127,6 +176,9 @@ function simulateBox(): BoundingBox {
 
 interface DetectFaceArgs {
   frameDataUrl?: string | null | undefined;
+  imageFile?: Blob | undefined;
+  frameWidth?: number | undefined;
+  frameHeight?: number | undefined;
   backendUrl?: string | undefined;
   demoMode: boolean;
   signal?: AbortSignal | undefined;
@@ -134,6 +186,9 @@ interface DetectFaceArgs {
 
 async function detectFace({
   frameDataUrl,
+  imageFile,
+  frameWidth,
+  frameHeight,
   backendUrl,
   demoMode,
   signal,
@@ -145,13 +200,18 @@ async function detectFace({
       faceCount?: number;
       box?: BoundingBox | null;
       boxes?: BoundingBox[];
-    }>(`${backendUrl.replace(/\/$/, "")}/api/detect-face`, { image: frameDataUrl }, signal);
-    const boxes = raw.boxes ?? (raw.box ? [raw.box] : []);
+    }>(
+      `${backendUrl.replace(/\/$/, "")}/api/detect-face`,
+      imageFile ?? frameDataUrl ?? "",
+      signal,
+    );
+    const boxes = normalizeBoxes(raw.boxes ?? (raw.box ? [raw.box] : []), frameWidth, frameHeight);
     return {
-      detected: raw.detected,
+      detected: raw.detected ?? boxes.length > 0,
       faceCount: raw.faceCount ?? boxes.length,
       confidence: typeof raw.confidence === "number" ? raw.confidence : null,
       box: boxes[0] ?? null,
+      boxes,
       source: "backend",
     };
   }
@@ -255,23 +315,27 @@ async function predictEmotion({
   signal,
 }: PredictArgs): Promise<EmotionPredictionResult> {
   if (!demoMode && backendUrl) {
-    const raw = await postJson<{
-      emotion: Emotion;
+    const raw = await postImage<{
+      emotion: string;
       confidence: number;
       probabilities?: Record<Emotion, number>;
     }>(
       `${backendUrl.replace(/\/$/, "")}/api/predict-emotion`,
-      { image: faceDataUrl },
+      faceDataUrl ?? "",
       signal,
     );
+    const emotion = asEmotion(raw.emotion);
+    if (!Number.isFinite(raw.confidence) || raw.confidence < 0 || raw.confidence > 1) {
+      throw new Error("Inference service returned an invalid confidence score.");
+    }
     const probabilities =
       raw.probabilities ??
       (EMOTIONS.reduce((acc, e) => {
-        acc[e] = e === raw.emotion ? Number((raw.confidence * 100).toFixed(1)) : 0;
+        acc[e] = e === emotion ? Number((raw.confidence * 100).toFixed(1)) : 0;
         return acc;
       }, {} as Record<Emotion, number>));
     return {
-      emotion: raw.emotion,
+      emotion,
       confidence: raw.confidence,
       probabilities,
       source: "backend",
@@ -346,6 +410,7 @@ export const emotionService = {
   detectFace,
   preprocessFace,
   predictEmotion,
+  normalizeBoxes,
   appendObservation,
   getEmotionHistory,
   generateAlert,

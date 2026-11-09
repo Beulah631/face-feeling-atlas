@@ -9,6 +9,7 @@ import {
 } from "@/components/fer/AnalysisPanels";
 import { AlertCard, EmotionTimeline, HistoryTable } from "@/components/fer/HistoryPanels";
 import { PageHeader } from "@/components/fer/ui";
+import { UploadImagePanel } from "@/components/fer/UploadImagePanel";
 
 export const Route = createFileRoute("/live")({
   head: () => ({
@@ -42,6 +43,7 @@ function LiveAnalysis() {
       <div className="grid gap-4 xl:grid-cols-3">
         <div className="space-y-4 xl:col-span-2">
           <CameraPanel />
+          <UploadImagePanel />
           <div className="grid gap-4 md:grid-cols-2">
             <FaceDetectionCard />
             <PreprocessingCard />
