@@ -1,0 +1,126 @@
+{
+  "model_name": "Swin Transformer (swin_tiny_patch4_window7_224)",
+  "dataset": "FER2013 (PrivateTest split)",
+  "samples_evaluated": 1000,
+  "accuracy": 0.536,
+  "macro_precision": 0.4776,
+  "macro_recall": 0.4652,
+  "macro_f1": 0.4692,
+  "per_class": [
+    {
+      "label": "Angry",
+      "precision": 0.4,
+      "recall": 0.303,
+      "f1_score": 0.3448,
+      "support": 132
+    },
+    {
+      "label": "Disgust",
+      "precision": 0.3,
+      "recall": 0.2308,
+      "f1_score": 0.2609,
+      "support": 13
+    },
+    {
+      "label": "Fear",
+      "precision": 0.3425,
+      "recall": 0.3546,
+      "f1_score": 0.3484,
+      "support": 141
+    },
+    {
+      "label": "Happy",
+      "precision": 0.7363,
+      "recall": 0.8366,
+      "f1_score": 0.7832,
+      "support": 257
+    },
+    {
+      "label": "Sad",
+      "precision": 0.3772,
+      "recall": 0.3937,
+      "f1_score": 0.3853,
+      "support": 160
+    },
+    {
+      "label": "Surprise",
+      "precision": 0.6509,
+      "recall": 0.6216,
+      "f1_score": 0.6359,
+      "support": 111
+    },
+    {
+      "label": "Neutral",
+      "precision": 0.5363,
+      "recall": 0.5161,
+      "f1_score": 0.526,
+      "support": 186
+    }
+  ],
+  "confusion_matrix": [
+    [
+      40,
+      1,
+      26,
+      13,
+      30,
+      7,
+      15
+    ],
+    [
+      4,
+      3,
+      2,
+      2,
+      2,
+      0,
+      0
+    ],
+    [
+      17,
+      3,
+      50,
+      12,
+      21,
+      18,
+      20
+    ],
+    [
+      10,
+      1,
+      6,
+      215,
+      12,
+      4,
+      9
+    ],
+    [
+      15,
+      1,
+      29,
+      16,
+      63,
+      2,
+      34
+    ],
+    [
+      4,
+      0,
+      18,
+      14,
+      1,
+      69,
+      5
+    ],
+    [
+      10,
+      1,
+      15,
+      20,
+      38,
+      6,
+      96
+    ]
+  ],
+  "inference_ms_per_image": 76.34
+}

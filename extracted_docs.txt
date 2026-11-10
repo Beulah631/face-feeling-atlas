@@ -1,0 +1,1931 @@
+
+FILE C:\Users\Admin\Downloads\mistake pdf.pdf
+PAGES 40
+---PAGE 1 (475 chars)---
+IMPROVED FACIAL
+EMOTION RECOGINITION
+USING SWIN TRANSFORMER
+AND YOLOv8 COMPARISION
+WITH CNN
+A PROJECT REPORT
+Submitted by
+BEULAH A (731623105005)
+VISHNU C (731623103063)
+MANOJ KUMAR S (731623105038)
+in partial fulfillment of the requirements for the award of the degree
+of
+BACHELOR OF ENGINEERING
+in
+ELECTRONICS AND COMMUNICATION ENGINNERING
+K S R INSTITUTE FOR ENGINEERING AND TECHNOLOGY
+(Autonomous)
+TIRUCHENGODE - 637 215
+ANNA UNIVERSITY :: CHENNAI 600 025
+NOVEMBER 2026
+i
+---PAGE 2 (648 chars)---
+K S R INSTITUTE FOR ENGINEERING AND TECHNOLOGY
+(Autonomous)
+TIRUCHENGODE – 637215
+ANNA UNIVERSITY : CHENNAI 600 025
+BONAFIDE CERTIFICATE
+Certified that this project report “IMPROVED FACIAL
+EMOTION RECOGINITION USING SWIN TRANSFORMER AND
+YOLOv8 IN COMPARISON WITH CNN” is the Bonafide work of
+Beulah A (731623105005) Vishnu C (731623103063) and Manoj Kumar
+S (731623105038) who carried out the project work under my
+supervision.
+SIGNATURE SIGNATURE
+Dr. S. PREMALATHA.,M.E.,Ph.D Ms.B.LATHA M.E (ph.D)
+HEAD OF THE DEPARTMENT SUPERVISOR
+Submitted for the Project Viva Voce examination held on
+____________________
+Internal Examiner External Examiner
+ii
+---PAGE 3 (1705 chars)---
+ABSTRACT
+Facial emotion recognition has become an essential component of
+human– computer interaction because the emotional state of a
+person, conveyed through the face, is one of the most immediate and
+universal channels of non-verbal communication.
+Conventional recognition pipelines rely on convolutional neural
+networks (CNN) operating on small, low-resolution grayscale faces,
+and although such pipelines are computationally cheap, their
+accuracy saturates because a fixed convolutional kernel can model
+only a limited receptive field and cannot capture the long-range
+spatial dependencies that exist between distant facial regions such as
+the eyes and the mouth.
+This project presents an improved facial emotion recognition system
+that combines a CNN baseline with a Swin Transformer classifier
+and YOLOv8based face detection. The system first localises faces in
+an input image using the anchor-free YOLOv8 detector.Each
+detected face is then classified into one of seven emotion categories
+(Angry, Disgust, Fear, Happy, Sad, Surprise and Neutral) by two
+alternative models: a compact CNN operating on 48 × 48 grayscale
+images and a hierarchical vision Transformer (Swin Transformer)
+operating on 224 × 224 × 3 colour images, obtained through the
+timm model library.
+The two models are trained and evaluated on the public FER2013
+dataset, and their comparative behaviour in terms of accuracy, per-
+class behaviour and inference cost is studied.
+The recognition pipeline is exposed as a service through a FastAPI
+backend and consumed by a React, TypeScript, Vite and Tailwind
+CSS front end, so that a user can upload a photograph or use a
+camera frame and immediately observe the detected emotion.
+iii
+---PAGE 4 (540 chars)---
+The key outcome of this phase of the project is a working end-to-end
+prototype comprising dataset preprocessing, model definition,
+training scripts, a REST inference service and a browser-based
+demonstration interface.
+Quantitative performance figures are reported only after the final
+training runs are completed; placeholders are retained in this report
+for accuracy, precision, recall and F1score values that are pending
+verification.
+KEYWORDS : Facial emotion recognition , swin transformer ,
+FER2013 ,deeplearning , FAastAPI , React
+iv
+---PAGE 5 (1372 chars)---
+ACKNOWLEDGEMENT
+We express our sincere thanks, for behind every achievement lies
+an unfathomable sea of gratitude to those who actuated it, without
+whom it would never have come into existence.
+We wish our heartfelt thanks to our respected Founder of K S R
+Educational Institutions Theivathiru Lion Dr. K. S. Rangasamy MJF.,
+and to the Chairman Mr. R. Srinivasan BBM., of K S R Educational
+Institutions for their moral support throughout the project.
+We wish to express our sincere thanks to respected Dean Dr. M.
+Venkatesan, M.E., Ph.D., for allowing us to have the extensive use of
+college facilities to do this project effectively.
+We would like to extend our heartfelt gratitude to our esteemed
+Principal, Dr. P. Meenakshi Devi, M.E., Ph.D., for inspiring us to carry
+out the project successfully.
+We would like to express our sincere gratitude to our respected
+Head of the Department Dr. S. PREMALATHA.,M.E.,Ph.D.,for her
+valuable guidance and constant motivation.
+We wish to express our sincere thanks to our Guide Ms. B. Latha,
+M.E.,(Ph.D)Assistant Professor/ECE and Project Coordinator Mrs.
+P.Mohana Sunthari, M.E.,Assistant Professor/ECE for the continuous
+help over the period and the creative ideas for this phase of the project
+work.
+We would like to extend our warmest thanks to all our staff
+members, lab technicians, parents and friends for their support.
+v
+HIGHLIGHT [0.956863, 0.572549, 0.14902] [486, 555, 527, 555, 486, 539, 527, 539, 114, 531, 262, 531, 114, 515, 262, 515] None Guest
+HIGHLIGHT [0.956863, 0.572549, 0.14902] [498, 276, 527, 276, 498, 260, 527, 260, 114, 252, 220, 252, 114, 236, 220, 236] None Guest
+---PAGE 6 (2325 chars)---
+TABLE OF CONTENT
+CHAPTER TITLE PAGE
+NO.
+ABSTRACT ...........................................................................................iii
+ACKNOWLEDGEMENT .....................................................................iv
+1 INTRODUCTION .........................................................................1
+1.1 General ............................................................................................1
+1.2 Background of the Study ................................................................1
+1.3 Problem Statement ..........................................................................1
+1.4 Aim of the Project ...........................................................................1
+1.5 Objectives of the Project .................................................................2
+1.6 Scope of the Project ........................................................................2
+1.7 Significance of the Project ..............................................................2
+2 LITERATURE SURVEY .............................................................3
+2.1 General ............................................................................................3
+2.2 Review of Literature .......................................................................3
+2.3 Research Gap ..................................................................................3
+3 EXISTING SYSTEM AND METHODOLOGY ........................5
+3.1 General ............................................................................................5
+3.2 Existing System ..............................................................................5
+3.2.1 Drawbacks .......................................................................................5
+4 PROJECT PROGRESS AND IMPLEMENTATION PLAN ...6
+4.1 General ............................................................................................6
+4.2 Proposed System .............................................................................6
+4.2.1 Advantages ......................................................................................6
+4.3 System Architecture ........................................................................6
+4.4 Hardware Specification ...................................................................7
+vi
+HIGHLIGHT [0.956863, 0.572549, 0.14902] [114, 750, 235, 750, 114, 734, 235, 734, 485, 750, 526, 750, 485, 734, 526, 734, 114, 722, 141, 722, 114, 706, 141, 706, 114, 693, 193, 693, 114, 677, 193, 677, 193, 693, 526, 693, 193, 677, 526, 677, 114, 668, 271, 668, 114, 652, 271, 652] None Guest
+HIGHLIGHT [0.956863, 0.572549, 0.14902] [296, 588, 495, 588, 296, 572, 495, 572] None Guest
+HIGHLIGHT [0.956863, 0.572549, 0.14902] [149, 640, 264, 640, 149, 623, 264, 623, 261, 640, 526, 640, 261, 623, 526, 623, 114, 613, 159, 613, 114, 597, 159, 597] None Guest
+HIGHLIGHT [0.956863, 0.572549, 0.14902] [114, 280, 135, 280, 114, 264, 135, 264, 149, 280, 243, 280, 149, 264, 243, 264, 243, 280, 526, 280, 243, 264, 526, 264, 114, 255, 206, 255, 114, 239, 206, 239] None Guest
+---PAGE 7 (699 chars)---
+4.5 Software Specification ....................................................................7
+4.6 Module Description ........................................................................7
+4.7 Flow Chart ......................................................................................8
+5 CONCLUSION .............................................................................9
+5.1 Conclusion ......................................................................................9
+APPENDIX ............................................................................................10
+REFERENCES ......................................................................................12
+vii
+HIGHLIGHT [0.956863, 0.572549, 0.14902] [114, 680, 135, 680, 114, 664, 135, 664, 149, 680, 194, 680, 149, 664, 194, 664] None Guest
+HIGHLIGHT [0.956863, 0.572549, 0.14902] [401, 655, 471, 655, 401, 639, 471, 639] None Guest
+HIGHLIGHT [0.956863, 0.572549, 0.14902] [404, 631, 499, 631, 404, 615, 499, 615] None Guest
+---PAGE 8 (154 chars)---
+LIST OF TABLES
+Table No Title Page No
+Composition of the
+Table 1 28
+FER2013 dataset
+Preprocessing
+Table 2 operations applied to 28
+the FER2013 images
+viii
+HIGHLIGHT [0.956863, 0.572549, 0.14902] [114, 785, 245, 785, 114, 767, 245, 767] None Guest
+---PAGE 9 (232 chars)---
+LIST OF FIGURES
+Figure No Title Page No
+System architecture
+of the proposed facial
+Fig 1 27
+emotion recognition
+system
+Swin transformer
+Fig 2 30
+stages for FER
+Flow chart of the
+proposed Facial
+Fig 3 32
+emotion recognition
+system
+ix
+---PAGE 10 (320 chars)---
+LIST OF ABBREVIATIONS
+Application Programming Interface
+API
+Convolutional Neural Network
+CNN
+Facial Emotion Recognition
+FER
+Facial Expression Recognition 2013
+FER2013
+Dataset
+Graphics Processing Unit
+GPU
+Machine Learning
+ML
+Red, Green, Blue
+RGB
+Shifted Window Transformer
+Swin
+User Interface
+UI
+You Only Look Once
+YOLO
+x
+HIGHLIGHT [0.956863, 0.572549, 0.14902] [114, 785, 279, 785, 114, 767, 279, 767] None Guest
+---PAGE 11 (1614 chars)---
+CHAPTER 1
+INTRODUCTION
+1.1 General
+Facial emotion recognition is an important research area in artificial
+intelligence, computer vision, and human-computer interaction. It
+focuses on identifying human emotional expressions by analysing facial
+features present in an image or video. Facial expressions provide
+valuable information about a person’s emotional state and can support
+the development of intelligent systems that interact more naturally with
+humans. Emotions such as happiness, sadness, anger, fear, surprise,
+disgust, and neutrality can be recognized by examining variations in the
+eyes, eyebrows, mouth, and other facial regions.
+Traditional emotion recognition systems often depend on manually
+designed facial features and conventional machine learning algorithms.
+Although these approaches can perform well under controlled
+conditions, their performance may be affected by variations in lighting,
+facial orientation, image quality, occlusion, and differences between
+individuals. Deep learning has improved facial emotion recognition by
+enabling models to learn useful visual representations directly from
+image data.
+Convolutional Neural Networks (CNNs) are widely used for image
+classification because they can learn spatial patterns such as edges,
+textures, and facial structures. However, CNNs primarily learn local
+visual features through convolution operations, which may limit their
+ability to represent relationships between distant regions of an image.
+Transformer-based architectures provide an alternative by modelling
+relationships between different image regions. The Swin Transformer
+xi
+---PAGE 12 (1614 chars)---
+uses hierarchical feature representations and shifted-window attention to
+capture visual information at multiple levels.
+In this project, an improved facial emotion recognition system is
+developed by combining face detection with emotion classification. The
+YOLOv8 model is used to detect faces in an input image or video frame,
+while CNN and Swin Transformer models are considered for emotion
+classification. Their performance can be compared using the same
+dataset and evaluation conditions. The system is designed with a web-
+based interface supported by a Python backend, allowing users to
+provide visual inputs and obtain emotion predictions.
+The main purpose of the project is to examine how a Transformer-based
+classification approach compares with a CNN-based approach within a
+practical facial emotion recognition pipeline.
+1.2 Background of the Study
+Human facial expressions are an important component of non-verbal
+communication. People frequently use facial expressions to
+communicate feelings and reactions without speaking. Automatically
+recognizing these expressions can help computer systems interpret visual
+information and support applications such as interactive interfaces,
+educational tools, behavioural research, and other emotion-aware
+systems.
+The development of automatic facial emotion recognition has
+progressed from handcrafted feature extraction to deep learning-based
+methods.
+CNN-based approaches introduced an effective method for learning
+facial features automatically from labelled images. By applying multiple
+convolutional and pooling layers, CNNs can learn representations
+xii
+---PAGE 13 (1791 chars)---
+ranging from simple visual patterns to more complex facial
+characteristics. Their ability to learn features directly from data makes
+them suitable for classifying facial expressions. However, distinguishing
+between visually similar emotions may remain challenging, particularly
+when images contain low-resolution faces, ambiguous expressions, or
+variations in lighting and pose.
+Face detection is another important component of an emotion
+recognition system. Before an expression can be classified, the system
+must locate the face within the input image. YOLOv8 is an object-
+detection architecture designed to identify objects and estimate their
+locations efficiently. In the proposed pipeline, it is used for face
+detection, after which the detected facial region can be prepared for
+classification by the CNN or Swin Transformer model.
+The FER2013 dataset is used in this project as the source of facial
+expression images. It contains examples labelled across seven emotion
+categories: Angry, Disgust, Fear, Happy, Sad, Surprise, and Neutral. The
+dataset provides a common basis for training and evaluating emotion
+classification models. The CNN model uses 48 × 48 grayscale images,
+whereas the Swin Transformer uses 224 × 224 × 3 input images.
+Appropriate preprocessing is therefore required to prepare the dataset for
+each model.
+1.3 Problem Statement
+Automatic facial emotion recognition remains challenging because
+facial expressions vary between individuals and are influenced by
+lighting conditions, image resolution, head orientation, partial occlusion,
+and the intensity of the displayed emotion. A system must first identify
+the face accurately and then classify its expression. Errors during face
+detection or image preprocessing can affect the final classification result.
+xiii
+---PAGE 14 (1341 chars)---
+CNN-based models provide an effective baseline for facial emotion
+classification, but their feature extraction process may not capture every
+relationship between distant facial regions. Therefore, the problem
+addressed in this project is the development of a practical facial emotion
+recognition pipeline that combines face detection using YOLOv8 with
+emotion classification using CNN and Swin Transformer models. The
+system aims to support a fair comparison of the two classification
+approaches using the FER2013 dataset and a web-based application
+interface.
+1.4 Aim of the Project
+The primary aim of this project is to develop a facial emotion
+recognition system using YOLOv8 for face detection and to compare
+CNN-based emotion classification with Swin Transformer-based
+classification. The system uses the FER2013 dataset, suitable image
+preprocessing, and an integrated software interface to support emotion
+prediction and model evaluation.
+1.5 Objectives of the Project
+The key objectives of the proposed system are as follows:
+1. To develop a facial emotion recognition system using YOLOv8 for
+face detection and Swin Transformer for classifying seven emotions
+using the FER2013 dataset.
+2. To compare the proposed Swin Transformer model with the
+existing CNN-based system and evaluate their performance using
+appropriate metrics.
+xiv
+---PAGE 15 (1674 chars)---
+1.6 Scope of the Project
+The scope of this project covers the design, implementation, and
+evaluation of a facial emotion recognition system using deep learning
+and computer vision techniques. The system focuses on detecting faces
+and classifying the expressions into seven predefined emotion categories
+using the FER2013 dataset.
+YOLOv8 is used for face detection, while CNN and Swin Transformer
+models are used as alternative emotion classifiers. The CNN processes
+48 × 48 grayscale images, whereas the Swin Transformer processes 224
+× 224 × 3 images. These input requirements involve different
+preprocessing procedures, which must be applied consistently during the
+respective model workflows.
+The comparative study focuses on the behaviour of the CNN and
+Swin Transformer classifiers when used for facial emotion recognition.
+Any performance conclusions must be based on the actual experimental
+results obtained during testing. The project does not assume that one
+model is superior without supporting evidence.
+1.7 Significance of the Project
+The significance of this project lies in combining face detection and
+deep learning-based emotion classification within a single application.
+By separating face detection from emotion classification, the system
+provides a clear processing pipeline in which each stage has a specific
+role. YOLOv8 identifies the facial region, while the CNN or Swin
+Transformer analyses the detected face to predict an emotion category.
+The comparison between CNN and Swin Transformer models is useful
+for understanding two different approaches to visual feature learning.
+CNNs learn spatial features through convolution operations, while the
+xv
+---PAGE 16 (1238 chars)---
+Swin Transformer uses attention mechanisms and hierarchical
+representations to model relationships between image regions.
+Evaluating these approaches under consistent conditions can help
+identify their practical advantages and limitations for the selected dataset
+and task.
+The use of the FER2013 dataset establishes a common set of emotion
+categories for the classification process. Applying suitable preprocessing
+for each architecture also highlights the importance of input preparation
+when comparing models with different design requirements.The
+integration of the models with a FastAPI backend and React-based
+frontend demonstrates how deep learning models can be incorporated
+into an accessible software application. This structure separates the user
+interface from the model-processing components and provides a
+foundation for testing the system through a web interface.
+Overall, this project provides a structured implementation and
+comparison of CNN-based and Swin Transformer-based facial emotion
+classification, supported by YOLOv8 face detection and a web
+application. Its significance is the integration of these components and
+the opportunity to evaluate the approaches using the project’s actual
+experimental evidence.
+xvi
+---PAGE 17 (1604 chars)---
+CHAPTER 2
+LITERATURE SURVEY
+2.1 General
+A survey of twenty-eight research papers was carried out using IEEE
+Xplore, the ACM Digital Library, Springer, Elsevier and the arXiv pre-
+print server. The papers span the period from the introduction of large-
+scale deep FER on FER2013 to recent Transformer-based facial-analysis
+studies, and were selected because they report measured results on
+public facial datasets, cover either face detection or emotion
+classification, or define the architectural families compared in this
+project.
+The common trend across the survey is a steady migration from hand-
+crafted features to deep CNNs and, more recently, to hierarchical vision
+Transformers, together with a growing insistence that models be
+evaluated on realistic, automatically detected faces rather than on pre-
+cropped images. A second, quieter trend is the appearance of deployable
+implementations:
+The newest papers increasingly report inference speed and model size
+alongside accuracy, acknowledging that a model must run somewhere.
+This chapter is organised into a review of literature, presented theme by
+theme, followed by the research gap that emerges from the review.
+The selection criteria were applied in three steps. Papers were first
+collected with the keywords facial expression recognition, FER2013,
+Swin Transformer, vision transformer and YOLO; they were then filtered
+to retain only works that report quantitative results on public data or
+define the architectures under study; and finally each retained paper was
+summarised with its method, dataset, reported result and limitation.
+.
+xvii
+HIGHLIGHT [0.956863, 0.572549, 0.14902] [279, 785, 362, 785, 279, 769, 362, 769] None Guest
+---PAGE 18 (1708 chars)---
+2.2 Review of Literature
+2.1 Facial Emotion Recognition
+[1] Canal et al. (2022) reviewed facial emotion recognition
+techniques using a systematic literature review of 51 selected studies
+covering 94 approaches. The review discussed traditional machine
+learning and neural-network methods for facial expression classification.
+It identified the increasing use of CNN-based approaches. A major
+challenge remains reliable recognition under different real-world
+conditions.
+[2] Khan (2022) reviewed conventional machine learning and deep
+learning techniques for facial emotion recognition. The study discussed
+datasets, evaluation methods, and the strengths and limitations of
+different approaches. It highlighted the importance of selecting suitable
+datasets and evaluation metrics. Its broad review does not implement a
+single integrated detection and classification system.
+[3] Rathour et al. (2022) examined the development of facial emotion
+recognition, including face detection, feature extraction, and expression
+classification. The review considered CNNs, deep belief networks,
+autoencoders, and recurrent neural networks. It identified dataset
+limitations, bias, and model integration as continuing challenges. As a
+survey, it does not provide a new experimental model.
+[4] Kopalidis et al. (2024) presented a comprehensive survey of facial
+expression recognition methods, datasets, and benchmarks. The authors
+discussed deep-learning methods and challenges such as overfitting,
+illumination changes, head pose, and identity bias. Their review provides
+useful guidance for selecting datasets and evaluation approaches.
+However, it does not establish which classifier is best for every
+application.
+xviii
+HIGHLIGHT [0.956863, 0.572549, 0.14902] [114, 785, 266, 785, 114, 769, 266, 769, 114, 759, 308, 759, 114, 743, 308, 743] None Guest
+HIGHLIGHT [0.956863, 0.572549, 0.14902] [164, 721, 172, 721, 164, 704, 172, 704] None Guest
+HIGHLIGHT [0.956863, 0.572549, 0.14902] [174, 721, 325, 721, 174, 704, 325, 704] None Guest
+HIGHLIGHT [0.956863, 0.572549, 0.14902] [147, 721, 172, 721, 147, 704, 172, 704] None Guest
+HIGHLIGHT [0.956863, 0.572549, 0.14902] [114, 721, 172, 721, 114, 704, 172, 704] None Guest
+HIGHLIGHT [0.956863, 0.572549, 0.14902] [130, 697, 137, 697, 130, 681, 137, 681] None Guest
+HIGHLIGHT [0.956863, 0.572549, 0.14902] [114, 697, 527, 697, 114, 681, 527, 681, 114, 673, 527, 673, 114, 657, 527, 657, 114, 649, 527, 649, 114, 633, 527, 633, 114, 626, 527, 626, 114, 610, 527, 610, 114, 602, 527, 602, 114, 586, 527, 586] None Guest
+---PAGE 19 (1823 chars)---
+[5] Sutar and Ambhaikar (2023) reviewed deep-learning methods for
+facial expression recognition, including CNN-based and recurrent
+architectures. They discussed feature learning, model performance, and
+the limitations of existing methods. Their review indicated the potential
+of hybrid architectures for capturing both spatial and temporal
+information. However, performance depends on the dataset and model
+configuration used.
+2.2 CNN in Facial Emotion Recognition
+[6] Zhao, Liu, and Zhou (2021) proposed EfficientFace, a
+lightweight facial expression recognition network using local-feature
+extraction, channel-spatial modulation, and label-distribution learning.
+The model was evaluated on RAF-DB, CAER-S, and AffectNet datasets.
+It reported accuracies of 88.36%, 85.87%, and 63.70%, respectively, on
+the corresponding benchmarks. Its performance can still be affected by
+dataset characteristics and challenging facial expressions.
+[7] Li (2021) investigated facial expression recognition using transfer
+learning with a ResNet-101 architecture. The study reported an overall
+accuracy of (96.29 \pm 0.78%). Transfer learning allows a model to
+reuse features learned from earlier training, reducing the need to learn
+every visual representation from scratch. However, the result should be
+interpreted according to the study’s experimental setup and dataset rather
+than directly compared with results from different benchmarks.
+[8] Authors of “Facial Emotion Recognition (FER) using
+Convolutional Neural Network” (2024) explored deep CNNs and
+pretrained architectures, including EfficientNet, ResNet, and VGGNet,
+for facial emotion classification. The study used the FER2013 dataset
+and reported approximately 82% accuracy on its training data. The work
+demonstrates the use of CNNs for facial emotion analysis. However,
+xix
+---PAGE 20 (1694 chars)---
+training accuracy alone does not establish generalization to unseen test
+data.
+[9] Xue, Wang, and Guo (2021) introduced TransFER, a Transformer-
+based approach that learns relationships among local facial regions. It
+uses attention-dropping mechanisms and a Vision Transformer
+component to improve representation learning. The work addresses the
+difficulty of recognizing expressions when important facial regions are
+obscured or affected by pose changes. Its performance depends on the
+quality of the learned representations and the data used for training.
+[10] Li et al. (2023) proposed a region-attention network (RAN) for
+facial expression recognition. The method uses attention to emphasize
+informative facial regions and was evaluated on in-the-wild facial
+expression benchmarks, including RAF-DB. It reported 77.94%
+accuracy on RAF-DB in a cross-domain comparison reported by later
+research. Differences between datasets remain a challenge when
+transferring a model to unfamiliar images.
+2.3 YOLOv8 for Face Detection and Facial Emotion Recognition
+[11] Liu et al. (2023) introduced YOLOv8 as a modern object-
+detection model through the Ultralytics implementation. Its detection
+architecture can locate objects in images and video frames, making it
+suitable as a face-localization component in a facial emotion recognition
+pipeline. A face detector does not independently establish the emotion
+category unless it is specifically trained for that classification task. Face
+detection performance also depends on image quality and the model’s
+training data.
+[12] Bakiasi et al. (2025) presented a real-time micro-expression
+recognition system using YOLOv8 and the FER2013 dataset. Their
+xx
+---PAGE 21 (1763 chars)---
+workflow included image preprocessing, data augmentation, and model
+fine-tuning for emotion-related recognition. The study explored the
+potential of YOLO-based processing for real-time facial analysis. The
+specific reported performance should be checked against the complete
+experimental paper before numerical comparisons are made.
+[13] “Optimizing Real-Time Emotion Recognition: A YOLO v.8
+Deep Learning Solution for Facial Expression Analysis” (conference
+publication, 2024; indexed in 2025) compared YOLOv5 with
+YOLOv8s and YOLOv8m for facial-expression recognition. The report
+gives accuracy values of 91%, 93%, and 98%, respectively, with
+YOLOv8m achieving a reported macro-average F1-score of 0.88. These
+values are specific to that study’s experimental setup. Further validation
+on other datasets is necessary before assuming similar results in a
+different system.
+[14] “Facial Expression Recognition—You Only Look Once—
+Neighborhood Coordinate Attention Mamba” (2024) investigated a
+facial-expression detection and classification architecture combining
+YOLO-related components with attention and Mamba mechanisms. The
+study evaluated methods on SFEW and RAF-DB and compared their
+performance across emotion categories. Its results demonstrate the
+potential of combining detection and feature-learning techniques.
+However, the additional architecture introduces complexity and requires
+careful evaluation across different conditions.
+[15] “Implementation of a Lightweight YOLOv8n–DeepFace
+Framework for Desktop-Based Facial Emotion Recognition” (2026)
+described a desktop application combining YOLOv8n face detection
+with DeepFace emotion classification. It tested a balanced FER2013
+subset of 400 images across four emotion classes and reported 76.4%
+xxi
+---PAGE 22 (1670 chars)---
+accuracy. The study demonstrates the feasibility of separating face
+detection from emotion classification. Its evaluation is limited by the
+smaller subset and four-class scope, which differ from a seven-class
+FER2013 experiment.
+2.4 Swin Transformer for Image Classification and Other
+Applications
+[16] Liu et al. (2021) introduced the Swin Transformer, a hierarchical
+vision Transformer that uses shifted-window attention. This design
+enables local attention within windows while allowing information
+exchange between neighbouring windows across layers. The architecture
+was developed as a general-purpose vision backbone and evaluated on
+tasks including image classification, object detection, and semantic
+segmentation. Its computational requirements and input-resolution
+choices must be considered when applying it to facial emotion
+recognition.
+[17] Cao et al. (2022) proposed Swin-Unet, a U-shaped Transformer
+architecture for medical image segmentation. It uses Swin Transformer
+blocks in an encoder-decoder structure to learn spatial representations.
+The study demonstrated the use of hierarchical Transformer features for
+medical-image analysis. However, segmentation of medical images is
+different from classifying facial emotions, so the architecture and
+training process require adaptation for the proposed project.
+[18] Hatamizadeh et al. (2022) presented Swin UNETR for three-
+dimensional medical image segmentation. The approach uses a Swin
+Transformer encoder to learn representations from volumetric image
+data. It illustrates the ability of Transformer architectures to capture
+spatial relationships in complex images. Its three-dimensional design
+xxii
+HIGHLIGHT [0.956863, 0.572549, 0.14902] [311, 48, 327, 48, 311, 34, 327, 34] None Guest
+---PAGE 23 (1639 chars)---
+targets medical imaging and is not directly equivalent to a two-
+dimensional facial emotion classifier.
+[19] Xue, Wang, and Guo (2021) developed TransFER to learn relation-
+aware facial expression representations using Transformer-based
+attention mechanisms. Evaluations of Transformer-based FER
+approaches show the importance of modelling relationships among facial
+regions rather than relying exclusively on local features. The approach
+supports the motivation for examining attention-based models in facial
+emotion recognition. Nevertheless, TransFER is not the same
+architecture as Swin Transformer, and its results cannot be directly
+attributed to Swin.
+[20] Yang et al. (2024) proposed CL-TransFER, a collaborative-learning
+framework that jointly trains CNN and Transformer feature extractors
+for facial expression recognition. The method aims to combine local
+semantic features with broader structural information and reduce the
+effects of noisy labels. This work provides a relevant example of
+combining convolutional and Transformer-based learning. However, it
+does not by itself establish the performance of a YOLOv8–Swin
+Transformer pipeline using the exact preprocessing and dataset settings
+of the present project.
+2.5 Research Gap
+The reviewed studies demonstrate progress in facial emotion
+recognition using CNNs, Transformer-based models, and YOLO-family
+detection methods. However, the cited literature does not establish a
+single standardized comparison of YOLOv8 face detection combined
+separately with a CNN classifier and a Swin Transformer classifier using
+the same FER2013 data split and evaluation conditions.
+xxiii
+HIGHLIGHT [0.956863, 0.572549, 0.14902] [310, 48, 328, 48, 310, 34, 328, 34] None Guest
+---PAGE 24 (1486 chars)---
+CHAPTER 3
+EXISTING SYSTEM AND METHODOLOGY
+3.1 General
+Facial emotion recognition is a computer vision technique used to
+identify human emotions from facial expressions. Existing systems use
+image processing, machine learning, and deep learning methods to
+classify expressions into categories such as Angry, Disgust, Fear, Happy,
+Sad, Surprise, and Neutral. The performance of these systems depends
+on image quality, facial feature visibility, and the classification model
+used.
+3.2 Existing System
+Traditional facial emotion recognition systems use handcrafted
+features and conventional machine learning algorithms, while more
+recent systems use Convolutional Neural Networks (CNNs) to
+automatically learn facial features. CNN-based systems can classify
+facial expressions effectively but may face challenges when handling
+variations in lighting, facial orientation, image quality, and complex
+facial patterns.
+Some existing approaches perform emotion classification without
+integrating a dedicated face detection stage into a complete application
+pipeline. This can limit their practical use with images containing
+different backgrounds or multiple objects. Therefore, combining reliable
+face detection with an effective emotion classification model is
+.
+important for developing a practical facial emotion recognition system
+3.2.1 Drawbacks
+•The convolutional receptive field is local, so relationships between
+distant facial regions, such as raised eyebrows and an open mouth in
+xxiv
+---PAGE 25 (988 chars)---
+Surprise, are only weakly captured, which caps accuracy at 60–68 % on
+FER2013 [2], [3], [4].
+•The pipeline presumes an ideal face crop supplied in advance; in
+realistic scenes the face must be detected first, and a Haar-cascade front
+end produces false positives and unstable crops under pose and
+illumination changes.
+•The small 48 × 48 grayscale input discards colour and fine detail, and
+cannot benefit directly from pre-trained colour backbones, limiting
+transfer learning.
+•Confusion concentrates in visually similar pairs such as Fear and
+Surprise, and in the rare Disgust class, because the model sees few
+examples and limited global context.
+•Most implementations exist only as training scripts with no service
+interface, so integrating the model into an application requires custom
+engineering each time.
+•There is no mechanism to compare an improved classifier against the
+CNN under identical conditions, so claims of improvement cannot be
+verified in the deployed pipeline.
+xxv
+---PAGE 26 (1236 chars)---
+CHAPTER 4
+PROJECT PROGRESS AND IMPLEMENTATION PLAN
+4.1 General
+The project is implemented in phases, including dataset
+preparation, model development, face detection, emotion
+classification, system integration, and testing.
+4.2 Proposed System
+The proposed system integrates YOLOv8 for face detection
+with CNN and Swin Transformer models for facial emotion
+classification. The FER2013 dataset is used to classify seven
+emotion categories. A FastAPI backend and React-based frontend
+provide an interface for input processing and displaying predictions.
+The system also enables comparison of the CNN and Swin
+Transformer approaches based on experimental results.
+4.2.1 Advantages
+•The YOLOv8 front end removes the dependence on pre-cropped
+faces, directly answering the first drawback of the existing system.
+•The Swin Transformer captures long-range facial dependencies through
+shifted-window attention, addressing the accuracy ceiling of local CNN
+receptive fields.
+•Both classifiers are evaluated on identical detected faces, giving a
+controlled, verifiable comparison that the existing literature lacks.
+•All components are open source and run on commodity hardware;
+inference on CPU is feasible with the nano variants of YOLOv8.
+xxvi
+---PAGE 27 (921 chars)---
+4.3 System Architecture
+Fig.1. System Architecture of the Proposed Facial Emotion
+Recognition System
+4.4 Hardware Specification
+The development machine’s hardware configuration is used to
+develop, train, and test the proposed facial emotion recognition system.
+Table 3 presents the hardware specifications.
+4.5 Software Specification
+The proposed system uses Python, FastAPI, React, TypeScript,
+PyTorch, YOLOv8, and related libraries for model development and
+application integration. Table 4 lists the software specifications.
+4.6 Module Description
+4.6.1 FER2013 Dataset Acquisition and Preprocessing Module
+Purpose: to provide clean, correctly formatted training and validation
+data to both classifiers. Input: the FER2013 archive of 35,887 labelled
+48 × 48 grayscale faces [8]. Output: PyTorch tensors for the CNN branch
+(48 × 48 × 1) and the Swin branch (224 × 224 × 3) with per-class
+training weights. Method:
+xxvii
+---PAGE 28 (758 chars)---
+the pixels are decoded from the comma-separated label file, normalised,
+and augmented with random horizontal flips, small rotations, brightness
+jitter and random erasing; for the Swin branch, Pillow bicubic resizing
+converts each grayscale face into a three-channel 224 × 224 image
+normalised with the ImageNet statistics.
+Table 1: Composition of the FER2013 dataset (as published [8])
+Class Training Public Test Share of
+Images Images Dataset
+Angry 3995 958 ≈13.8 %
+Disgust 436 111 ≈1.5 %
+Fear 4097 1024 ≈14.3 %
+Happy 7215 1774 ≈25.0 %
+Sad 4830 1247 ≈16.9 %
+Surprise 3171 831 ≈11.2 %
+Neutral 4965 1233 ≈17.3 %
+Table 2: Preprocessing operations applied to the FER2013 images
+The essential logic of the module is summarised in the following
+pseudocode:
+xxviii
+HIGHLIGHT [0.956863, 0.572549, 0.14902] [482, 494, 486, 494, 482, 477, 486, 477, 319, 218, 326, 218, 319, 201, 326, 201, 319, 177, 326, 177, 319, 161, 326, 161] None Guest
+---PAGE 29 (1731 chars)---
+4.6.2 YOLOv8 Face Detection Module
+Purpose: to localise every face in the input image. Input: the decoded
+RGB image from the backend. Output: bounding boxes, confidence
+scores and crops for the classifiers. Method: the Ultralytics YOLOv8
+nano model, fine-tuned for the single face class, runs one anchor-free
+forward pass; predictions are filtered by a confidence threshold of 0.25
+and refined by non-maximum suppression with an IoU threshold of 0.45.
+The pipeline of the module is shown in Fig.3.
+Status: completed and exercised on sample images.
+4.6.3 CNN Baseline Emotion Classification Module
+Purpose: to provide the reference classifier against which the Swin
+Transformer is compared. Input: 48 × 48 × 1 grayscale face crops.
+Output: seven class probabilities. Method: three convolution blocks with
+32, 64 and 128 filters of size 3 × 3, each followed by batch
+normalisation, ReLU and 2 × 2 max pooling, a flattened feature vector, a
+dense layer of 256 units with dropout 0.5, and a seven-unit softmax
+head; trained with AdamW and weighted cross-entropy.
+Status: completed; quantitative results are reported after the final training
+run.
+4.6.4 Swin Transformer Emotion Classification Module
+Purpose: to test whether hierarchical shifted-window attention
+improves emotion classification over the CNN baseline. Input: 224 ×
+224 × 3 face crops. Output: seven class probabilities. Method: a Swin-T
+backbone from the timm library, pre-trained on ImageNet-1K, is fine-
+tuned with a new seven-unit head; windows of 7 × 7 patches, stage
+dimensions (96, 192, 384, 768) and patch merging between stages follow
+the published Swin-T configuration [5]. Status: completed; quantitative
+results are reported after the final training run.
+xxix
+---PAGE 30 (11 chars)---
+Fig 1.2
+xxx
+---PAGE 31 (1205 chars)---
+4.6.5 FastAPI Inference Service Module
+Purpose: to expose the complete detect-and-classify pipeline as a
+REST service. Input: multipart image uploads over HTTP. Output: JSON
+predictions containing, for every detected face, the bounding box and the
+emotion predictions of both models. Method: FastAPI application served
+by Uvicorn; Pillow handles decoding; the detector and both classifiers
+are loaded once at start-up and reused across requests; Pydantic models
+define the response schema and automatic OpenAPI documentation.
+Status: completed and exercised with the dashboard.
+4.6.6 React Dashboard Module
+Purpose: to give users a browser interface for testing the system.
+Input: usersupplied images or camera frames. Output: visual overlay of
+detected faces with emotion labels and confidence bars. Method: React
+18 with TypeScript, built by Vite and styled with Tailwind CSS; the
+dashboard posts the image to the backend, renders the returned bounding
+boxes over a preview, and lists the predictions of both classifiers side by
+side. Status: completed in this phase; the appearance of the dashboard is
+documented through the four screenshots of the following pages, each on
+its own dedicated page.
+xxxi
+---PAGE 32 (74 chars)---
+Fig.13.
+Flow Chart of the Proposed Facial Emotion Recognition System
+xxxii
+---PAGE 33 (448 chars)---
+CHAPTER 5
+CONCLUSION
+5.1 Conclusion
+This project addressed the limited accuracy and limited deployability
+of conventional CNN-only facial emotion recognition by building a
+complete pipeline in which YOLOv8 detects faces and two classifiers, a
+compact CNN baseline and a Swin Transformer, assign one of seven
+FER2013 emotion categories under identical conditions, with the whole
+system exposed through a FastAPI service and a React dashboard.
+xxxiii
+---PAGE 34 (1251 chars)---
+APPENDIX CODE
+A.1 FER2013 DATASET PREPROCESSING (MODULE 1)
+import numpy as np
+import pandas as pd
+from PIL import Image
+EMOTION_LABELS = [
+"Angry", "Disgust", "Fear", "Happy",
+"Sad", "Surprise", "Neutral"
+]
+def preprocess_fer2013_image(pixel_string):
+"""Convert FER2013 pixel values into a 48x48 grayscale image."""
+pixels = np.fromstring(pixel_string, sep=" ", dtype=np.uint8)
+if pixels.size != 48 * 48:
+raise ValueError("Invalid FER2013 image dimensions")
+return pixels.reshape(48, 48)
+def prepare_cnn_image(image):
+"""Prepare a grayscale image for CNN input."""
+image = Image.fromarray(image).resize((48, 48))
+return np.asarray(image, dtype=np.float32) / 255.0
+def prepare_swin_image(image):
+"""Convert a grayscale image to a three-channel Swin input."""
+image = Image.fromarray(image).convert("RGB")
+image = image.resize((224, 224))
+return np.asarray(image, dtype=np.float32) / 255.0
+A.2 YOLOv8 FACE DETECTION (MODULE 2)
+from ultralytics import YOLO
+# Load a YOLOv8 model trained for face detection.
+# Replace the path with the actual model file.
+detector = YOLO("face_detection.pt")
+def detect_faces(image, confidence_threshold=0.5):
+"""Return detected face bounding boxes and confidence values."""
+results = detector.predict(
+source=image,
+xxxiv
+HIGHLIGHT [0.956863, 0.572549, 0.14902] [114, 722, 229, 722, 114, 706, 229, 706, 114, 706, 229, 706, 114, 690, 229, 690, 114, 690, 248, 690, 114, 674, 248, 674, 114, 658, 261, 658, 114, 642, 261, 642, 114, 642, 342, 642, 114, 626, 342, 626, 114, 626, 289, 626, 114, 610, 289, 610, 114, 610, 122, 610, 114, 594, 122, 594, 114, 578, 370, 578, 114, 562, 370, 562, 114, 562, 509, 562, 114, 546, 509, 546, 114, 546, 473, 546, 114, 530, 473, 530, 114, 514, 267, 514, 114, 498, 267, 498, 114, 498, 459, 498, 114, 482, 459, 482, 114, 466, 292, 466, 114, 450, 292, 450, 114, 434, 296, 434, 114, 418, 296, 418, 114, 418, 400, 418, 114, 402, 400, 402, 114, 402, 408, 402, 114, 386, 408, 386, 114, 386, 307, 386, 114, 370, 307, 370] None Guest
+---PAGE 35 (723 chars)---
+conf=confidence_threshold,
+verbose=False
+)
+faces = []
+for result in results:
+if result.boxes is None:
+continue
+for box in result.boxes:
+x1, y1, x2, y2 = map(
+int, box.xyxy[0].cpu().tolist()
+)
+confidence = float(box.conf[0].cpu())
+faces.append({
+"bbox": [x1, y1, x2, y2],
+"confidence": confidence
+})
+return faces
+A.3 SWIN TRANSFORMER EMOTION CLASSIFICATION
+(MODULE 3)
+import torch
+import timm
+from PIL import Image
+from torchvision import transforms
+EMOTION_LABELS = [
+"Angry", "Disgust", "Fear", "Happy",
+"Sad", "Surprise", "Neutral"
+]
+device = torch.device(
+"cuda" if torch.cuda.is_available() else "cpu"
+)
+model = timm.create_model(
+"swin_tiny_patch4_window7_224",
+pretrained=False,
+num_classes=len(EMOTION_LABELS)
+)
+xxxv
+---PAGE 36 (1086 chars)---
+# Load the trained project checkpoint.
+model.load_state_dict(
+torch.load("swin_emotion_model.pth",
+map_location=device)
+)
+model.to(device)
+model.eval()
+preprocess = transforms.Compose([
+transforms.Resize((224, 224)),
+transforms.ToTensor(),
+transforms.Normalize(
+mean=[0.485, 0.456, 0.406],
+std=[0.229, 0.224, 0.225]
+)
+])
+def predict_emotion(face_image):
+"""Predict an emotion label and its confidence."""
+if not isinstance(face_image, Image.Image):
+face_image = Image.fromarray(face_image)
+face_image = face_image.convert("RGB")
+tensor = preprocess(face_image).unsqueeze(0).to(device)
+with torch.no_grad():
+logits = model(tensor)
+probabilities = torch.softmax(logits, dim=1)
+confidence, predicted = probabilities.max(dim=1)
+return {
+"emotion": EMOTION_LABELS[predicted.item()],
+"confidence": float(confidence.item())
+}
+A.5 CNN BASELINE AND MODEL COMPARISON (MODULE
+4)def compare_classifiers(cnn_predict, swin_predict, face_image):
+"""Compare predictions from the existing CNN and Swin models."""
+cnn_result = cnn_predict(face_image)
+swin_result = swin_predict(face_image)
+return {
+xxxvi
+---PAGE 37 (565 chars)---
+"CNN": {
+"emotion": cnn_result["emotion"],
+"confidence": cnn_result["confidence"]
+},
+"SwinTransformer": {
+"emotion": swin_result["emotion"],
+"confidence": swin_result["confidence"]
+}
+}
+A.6 SYSTEM VERIFICATION (MODULE 5)
+def verify_prediction_response(response):
+"""Check the basic structure of an inference response."""
+assert "faces_detected" in response
+assert "predictions" in response
+for item in response["predictions"]:
+assert len(item["bbox"]) == 4
+assert item["emotion"] in EMOTION_LABELS
+assert 0.0 <= item["emotion_confidence"] <= 1.0
+return True
+.
+xxxvii
+---PAGE 38 (1651 chars)---
+REFERENCES
+1. Canal, F. Z., Müller, T. R., Matias, J. C., Scotton, G. G., de Sa
+Junior, A. R., Pozzebon, E., and Sobieranski, A. C. (2022). “A
+Survey on Facial Emotion Recognition Techniques: A State-of-the-
+Art Literature Review.” Information Sciences, 582, 593–617.
+https://doi.org/10.1016/j.ins.2021.10.005
+2. Khan, A. R. (2022). “Facial Emotion Recognition Using
+Conventional Machine Learning and Deep Learning Methods:
+Current Achievements, Analysis and Remaining Challenges.”
+Information, 13(6), 268. https://doi.org/10.3390/info13060268
+3. Rathour, N., Singh, R., Gehlot, A., Akram, S. V., Thakur, A. K.,
+and Kumar, A. (2022). “The Decadal Perspective of Facial Emotion
+Processing and Recognition: A Survey.” Displays, 75, 102330.
+https://doi.org/10.1016/j.displa.2022.102330
+4. Kopalidis, T., Solachidis, V., Vretos, N., and Daras, P. (2024).
+“Advances in Facial Expression Recognition: A Survey of Methods,
+Benchmarks, Models, and Datasets.” Information, 15(3), 135.
+https://doi.org/10.3390/info15030135
+5. Sutar, M. B., and Ambhaikar, A. (2023). “A Survey on Deep
+Facial Expression Recognition.” Mathematical Statistician and
+Engineering Applications, 72(1), 470–485. https://doi.org/
+10.17762/msea.v72i1.1900
+6. Zhao, Z., Liu, Q., and Zhou, F. (2021). “Robust Lightweight
+Facial Expression Recognition Network with Label Distribution
+Training.” Proceedings of the AAAI Conference on Artificial
+Intelligence, 35(4), 3510–3519. https://doi.org/10.1609/
+aaai.v35i4.16465
+7. Li, B. (2021). “Facial Expression Recognition via Transfer
+Learning.” EAI Endorsed Transactions on e-Learning, 7(21).
+https://doi.org/10.4108/eai.8-4-2021.169180
+xxxviii
+---PAGE 39 (1684 chars)---
+8. “Facial Emotion Recognition (FER) using Convolutional Neural
+Network (CNN).” (2024). Procedia Computer Science, 235, 2079–
+2089. https://doi.org/10.1016/j.procs.2024.04.197
+9. Xue, F., Wang, Q., and Guo, G. (2021). “TransFER: Learning
+Relation-Aware Facial Expression Representations with
+Transformers.” Proceedings of the IEEE/CVF International
+Conference on Computer Vision (ICCV), 3601–3610. https://
+doi.org/10.1109/ICCV48922.2021.00358
+10.Li et al. (2023). “RAN: Region Attention Network for Facial
+Expression Recognition.” Verify the full title, author list, and
+publication details from the original publication before final
+submission.
+11.Ultralytics. (2023). YOLOv8: Object Detection Model and
+Documentation. https://docs.ultralytics.com/
+12.Bakiasi, V., Kapçiu, R., Zeqo, E., Bushati, S., Bushi, F., Bame,
+O., and Lamaj, B. (2025). “Real-Time Micro-Expression
+Recognition Using YOLOv8 and FER2013 Dataset.” Journal of
+Information Systems Engineering and Management. https://doi.org/
+10.52783/jisem.v10i18s.2883
+13.“Optimizing Real-Time Emotion Recognition: A YOLO v.8 Deep
+Learning Solution for Facial Expression Analysis.” (2024). 2024
+10th International Conference on Computer and Communications.
+https://doi.org/10.1109/ICCC62609.2024.10942205
+14.“Facial Expression Recognition—You Only Look Once—
+Neighborhood Coordinate Attention Mamba: Facial Expression
+Detection and Classification Based on Neighbor and Coordinates
+Attention Mechanism.” (2024). Verify the full author list and
+publication details from the original article before final submission.
+15.“Implementation of a Lightweight YOLOv8n–DeepFace
+Framework for Desktop-Based Facial Emotion Recognition.”
+xxxix
+---PAGE 40 (1314 chars)---
+(2026). Journal of Technology and Health. Verify the final
+publication metadata before final submission.
+16.Liu, Z., Lin, Y., Cao, Y., Hu, H., Wei, Y., Zhang, Z., Lin, S., and
+Guo, B. (2021). “Swin Transformer: Hierarchical Vision
+Transformer Using Shifted Windows.” Proceedings of the IEEE/
+CVF International Conference on Computer Vision (ICCV), 10012–
+10022. https://doi.org/10.1109/ICCV48922.2021.00986
+17.Cao, H. et al. (2022). “Swin-Unet: Unet-like Pure Transformer
+for Medical Image Segmentation.” Computer Vision – ECCV 2022
+Workshops. Verify the full author list and proceedings details before
+final submission.
+18.Hatamizadeh, A. et al. (2022). “Swin UNETR: Swin
+Transformers for Semantic Segmentation of Brain Tumors in MRI
+Images.” BrainLes Workshop / MICCAI-related proceedings. Verify
+the final publication venue and bibliographic details before final
+submission.
+19.Xue, F., Wang, Q., and Guo, G. (2021). “TransFER: Learning
+Relation-Aware Facial Expression Representations with
+Transformers.” Proceedings of ICCV, 3601–3610. https://doi.org/
+10.1109/ICCV48922.2021.00358
+20.Yang, Y. et al. (2024). “CL-TransFER: Collaborative Learning
+Based Transformer for Facial Expression Recognition with Masked
+Reconstruction.” Pattern Recognition, 156, 110741. https://doi.org/
+10.1016/j.patcog.2024.110741
+xl
+
+FILE C:\Users\Admin\Downloads\Content.pdf
+PAGES 36
+---PAGE 1 (488 chars)---
+NEXTGEN AI ONLINE EXAM
+CHEATING DETECTION SYSTEM
+USING COMPUTER VISION AND
+EXPLAINABLE AI
+A PROJECT REPORT - PHASE I
+Submitted by
+GOPINATH C (731623105018)
+LOGESHWARAN M (731623105035)
+PRASANESHWAR K (731623105045)
+in partial fulfilment of the requirements for the award of the degree
+of
+BACHELOR OF ENGINEERING
+in
+ELECTRONICS AND COMMUNICATION
+ENGINEERING
+K S R INSTITUTE FOR ENGINEERING AND
+TECHNOLOGY
+(Autonomous)
+TIRUCHENGODE – 637215
+ANNA UNIVERSITY:: CHENNAI 600 025
+NOVEMBER 2026
+i
+---PAGE 2 (643 chars)---
+K S R INSTITUTE FOR ENGINEERING AND
+TECHNOLOGY
+(Autonomous)
+TIRUCHENGODE – 637215
+ANNA UNIVERSITY :: CHENNAI 600 025
+BONAFIDE CERTIFICATE
+Certified that this project report “NEXTGEN AI ONLINE EXAM
+CHEATING DETECTION SYSTEM USING COMPUTER VISION
+AND EXPLAINABLE AI” is the Bonafide work of Gopinath C
+(731623105018), Logeshwaran M (731623105035) and Prasaneshwar K
+(731623105045) who carried out the project work under my supervision.
+SIGNATURE SIGNATURE
+Dr. S. PREMALATHA.,M.E.,Ph.D Ms. M. DHARANI, M.E
+HEAD OF THE DEPARTMENT SUPERVISOR
+Submitted for the Project Viva Voce examination held on ___________
+Internal Examiner External Examiner
+ii
+---PAGE 3 (1858 chars)---
+ABSTRACT
+The aim of this project is to develop a NextGen AI Online Exam Cheating
+Detection System using Computer Vision and Explainable AI to improve the fairness
+and reliability of online examinations. Existing AI-based proctoring systems often
+generate false alerts because they identify individual actions without considering the
+overall behaviour of students. This creates difficulties for students, faculty members
+and educational institutions. To overcome these limitations, the proposed system
+integrates real-time webcam and microphone monitoring with context-aware
+behavioural analysis. YOLOv8 and MediaPipe are used to detect suspicious objects,
+multiple persons, facial orientation, gaze and head movements, while browser
+monitoring identifies activities such as tab switching and copy-paste attempts. The
+system analyses event confidence, duration and frequency to calculate risk scores and
+generate explainable evidence for faculty review. The platform is developed using
+React.js, Python, FastAPI and MongoDB, with modules for student authentication,
+online examinations, AI monitoring, risk assessment, evidence generation, faculty
+review and report generation. The proposed evaluation considers 200 online
+examination sessions, comprising 100 genuine sessions and 100 suspicious sessions,
+along with 2 baseline approaches for comparison. The target performance is 96.8%
+accuracy, 95.9% precision, 96.2% recall and 96.0% F1-score. These values represent
+expected targets to be validated through experimental testing, not confirmed results.
+The system aims to reduce false alerts and support transparent examination
+monitoring. Future enhancements include hardware integration, further testing and
+performance optimisation.
+Keywords: Online Examination, Computer Vision, YOLOv8, MediaPipe,
+Behaviour Analysis, Explainable AI, AI Proctoring.
+iii
+---PAGE 4 (1364 chars)---
+ACKNOWLEDGEMENT
+We express our sincere thanks, for behind every achievement lies an
+unfathomable sea of gratitude to those who actuated it, without whom it would never
+have come into existence.
+We wish our heartfelt thanks to our respected Founder of K S R Educational
+Institutions Theivathiru Lion Dr. K. S. Rangasamy MJF., and to the Chairman
+Mr. R. Srinivasan BBM., of K S R Educational Institutions for their moral support
+throughout the project.
+We wish to express our sincere thanks to respected Dean Dr. M. Venkatesan,
+M.E., Ph.D., for allowing us to have the extensive use of college facilities to do this
+project effectively.
+We would like to extend our heartfelt gratitude to our esteemed Principal,
+Dr. P. Meenakshi Devi, M.E., Ph.D., for inspiring us to carry out the project
+successfully.
+We would like to express our sincere gratitude to our respected Head of the
+Department Dr. S. Premalatha., M.E., Ph.D., for her valuable guidance and constant
+motivation.
+We wish to express sincere thanks our Guide Mrs. M. Dharani M.E., Assistant
+Professor/ECE and Project coordinator Mrs. P. Mohana Sunthari, M.E., Assistant
+Professor / ECE for the continuous help over the period and the create ideas for this
+phase of project work.
+We would like to extend our warmest thanks to all our staff members, lab
+technicians, parents and friends for their support.
+iv
+---PAGE 5 (708 chars)---
+TABLE OF CONTENT
+PAGE
+CHAPTER TITLE
+NO.
+NO.
+ABSTRACT iii
+ACKNOWLEDGEMENT iv
+LIST OF TABLES
+vii
+LIST OF FIGURES
+viii
+LIST OF ABBREVIATIONS
+ix
+1 INTRODUCTION
+1
+1.1 GENERAL
+1
+1.2 BACKGROUND OF THE STUDY
+1
+1.3 PROBLEM STATEMENT
+3
+1.4 AIM OF THE PROJECT
+3
+1.5 OBJECTIVES OF THE PROJECT
+3
+1.6 SCOPE AND SIGNIFICANCE
+4
+2 LITERATURE SURVEY
+5
+2.1 GENERAL
+5
+2.2 REVIEW OF LITERATURE
+5
+2.3 RESEARCH GAP
+9
+3 EXISTING SYSTEM AND METHODOLOGY
+11
+3.1 GENERAL
+11
+3.2 EXISTING SYSTEM
+11
+3.2.1 Drawbacks
+13
+4 PROJECT PROGRESS AND IMPLEMENTATION PLAN
+14
+4.1 GENERAL
+14
+4.2 PROPOSED SYSTEM
+14
+4.2.1 Advantages
+15
+4.3 SYSTEM ARCHITECTURE
+16
+4.4 HARDWARE AND SOFTWARE SPECIFICATIONS
+16
+4.5 MODULE DESCRIPTION
+18
+4.6 FLOW CHART
+20
+v
+---PAGE 6 (89 chars)---
+PAGE
+CHAPTER TITLE
+NO.
+NO.
+5 CONCLUSION
+22
+5.1 CONCLUSION
+22
+APPENDIX
+23
+REFERENCES
+26
+vi
+---PAGE 7 (101 chars)---
+LIST OF TABLES
+TABLE NO. TITLE PAGE NO.
+4.1 Hardware Requirements 17
+4.2 Software Requirements
+17
+vii
+---PAGE 8 (181 chars)---
+LIST OF FIGURES
+FIGURE NO. TITLE PAGE NO.
+3.1 Block Diagram of the Existing System 12
+4.1 System Architecture of the Proposed System
+16
+4.2 Flow Chart of the Proposed System
+20
+viii
+---PAGE 9 (568 chars)---
+LIST OF ABBREVIATIONS
+TERMS EXPANSION
+AI Artificial Intelligence
+API Application Programming Interface
+CPU Central Processing Unit
+CSS Cascading Style Sheets
+FN False Negative
+FP False Positive
+GB GigaByte
+GPU Graphics Processing Unit
+HTML HyperText Markup Language
+HTTPS Hypertext Transfer Protocol Secure
+IEEE Institute of Electrical and Electronics Engineers
+JSON JavaScript Object Notation
+JWT JSON Web Token
+RAM Random Access Memory
+SSD Solid State Drive
+TP True Positive
+USB Universal Serial Bus
+XAI Explainable Artificial Intelligence
+YOLO You Only Look Once
+ix
+---PAGE 10 (1785 chars)---
+CHAPTER 1
+INTRODUCTION
+1.1 GENERAL
+Digital technologies have changed the way educational institutions conduct
+assessments. Online examinations are widely used by universities, colleges, certification
+programmes and recruitment organisations because candidates can participate remotely. This
+flexibility also creates a responsibility to protect examination integrity when candidates are not
+physically supervised.
+Common examination violations include receiving help from another person, using
+unauthorised electronic devices, opening external resources, switching browser tabs and
+copying or pasting restricted content. Such activities can affect the fairness of results. Students
+may be wrongly suspected, faculty members may need to review long recordings, and
+institutions may find it difficult to maintain confidence in remote assessments.
+Computer Vision and Artificial Intelligence can assist by analysing webcam images,
+facial orientation, objects and activity patterns. However, an isolated action such as looking
+away from the screen is not sufficient proof of malpractice. The proposed project, “NextGen
+AI Online Exam Cheating Detection System using Computer Vision and Explainable AI”,
+combines visual monitoring with browser and audio activity indicators. It evaluates event
+confidence, duration and frequency and presents evidence for faculty review [1], [2].
+1.2 BACKGROUND OF THE STUDY
+Artificial Intelligence (AI) enables computer systems to identify patterns and produce
+predictions from data. Computer Vision is the AI field concerned with extracting information
+from images and video. In online examinations, these techniques can support face presence
+checks, object identification, head-pose analysis and the detection of more than one person in
+the camera view.
+1
+---PAGE 11 (2108 chars)---
+YOLOv8 (You Only Look Once) is used for object and person detection in video
+frames. It returns detected classes, bounding boxes and confidence values. MediaPipe provides
+real-time facial landmark information that can support facial orientation, gaze-related analysis
+and head-pose estimation. OpenCV is used to capture and prepare webcam frames before they
+are passed to the analysis components.
+Behavioural analysis examines activities over time rather than treating each
+observation independently. Context-aware analysis considers the confidence of an event, how
+often it occurs, how long it continues and whether it appears together with other indicators.
+Explainable Artificial Intelligence (XAI) presents the event type, timestamp and supporting
+information so that the alert can be understood and checked by a human reviewer.
+Earlier online-proctoring research has explored YOLO-based object detection, face
+landmarks, gaze estimation, head-pose analysis, audio cues and video-based abnormal-activity
+classification. The CHEESE framework uses Multiple Instance Learning to consider gaze,
+head posture, facial information, body posture and background context. Other studies have
+examined behavioural records and multi-camera views. These approaches establish useful
+methods, but differences in lighting, camera position, network quality and normal student
+behaviour can influence their outputs [2]–[4], [6], [11]–[14].
+The project adopts a multi-source approach. Webcam frames are analysed using
+OpenCV, YOLOv8 and MediaPipe. Browser events such as tab switching, window-focus
+changes and copy-paste actions are separately timestamped. Microphone input is used to obtain
+audio activity indicators. The observations are associated with the active examination session
+and combined for contextual risk assessment.
+The platform is intended to support student authentication, MCQ and programming
+examinations, continuous face-presence checks, monitoring, result evaluation, faculty review
+and report generation. Automated alerts are treated as indications requiring review, not as final
+proof of cheating.
+2
+---PAGE 12 (1726 chars)---
+1.3 PROBLEM STATEMENT
+Existing online examination monitoring systems may classify normal student activities
+as suspicious when they rely on individual visual events. Temporary gaze changes, head
+movements, poor lighting or camera repositioning can create false alerts. Systems that provide
+only an alert label may also fail to explain what was detected, when it occurred and why it
+contributed to a risk classification.
+The central problem addressed by this project is the lack of an integrated and
+explainable workflow that combines visual observations with browser and audio indicators,
+evaluates their context and provides evidence that faculty members can verify. The system
+must reduce unnecessary alerts without claiming that automated monitoring can identify every
+form of malpractice.
+1.4 AIM OF THE PROJECT
+The aim is to design a web-based AI online examination monitoring system using
+Computer Vision, context-aware behavioural analysis and Explainable AI. It combines
+YOLOv8 and MediaPipe visual analysis with supported browser and audio activity
+monitoring, calculates configurable risk scores and provides event-based evidence for
+authorised faculty review.
+1.5 OBJECTIVES OF THE PROJECT
+1. Develop a secure platform for student registration, authentication and MCQ or
+programming examinations.
+2. Implement webcam-based face verification and continuous monitoring during an
+examination.
+3. Use YOLOv8 and MediaPipe to detect objects, additional persons, facial orientation and
+head movements.
+4. Record supported microphone and browser events, including tab switching, focus changes
+and copy-paste attempts.
+5. Assess event confidence, frequency, duration and combinations to calculate a contextual
+risk score.
+3
+---PAGE 13 (2061 chars)---
+6. Generate explanations, timestamps and supporting evidence, and provide a faculty
+dashboard with report export.
+7. Evaluate the system using genuine and suspicious sessions and standard classification
+metrics.
+1.6 SCOPE AND SIGNIFICANCE
+The project scope covers a web application for students and faculty members. Students
+can authenticate, select an assigned examination and answer MCQ or programming questions.
+Faculty members can view examination sessions, inspect monitoring events, review risk
+categories and generate reports. The monitoring inputs are webcam video, microphone activity
+indicators, browser events and examination-session information.
+The planned evaluation uses 200 examination sessions: 100 genuine sessions and 100
+suspicious sessions. The proposed comparison includes an existing AI-proctoring baseline and
+a YOLOv8-based detection baseline. Accuracy, precision, recall and F1-score are the primary
+evaluation measures. The review target values are 96.8% accuracy, 95.9% precision, 96.2%
+recall and 96.0% F1-score; these are targets for validation, not confirmed experimental results.
+The system may benefit students by reducing reliance on isolated movements, faculty
+members by directing attention to timestamped events, and institutions by providing a common
+examination and review platform. Its technical contribution is the combination of multiple
+monitoring sources, contextual risk assessment and evidence-oriented explanations.
+The system depends on a working webcam, microphone, internet connection and
+suitable lighting. Camera quality, background noise, network interruptions and individual
+behaviour may affect monitoring. Privacy, access control and responsible retention of
+recordings are important. A risk score cannot independently establish misconduct; the final
+decision must remain with an authorised faculty member. The present phase covers
+requirements, research review, gap analysis, architecture and technology selection.
+Implementation, integration and experimental validation are planned for the next phase.
+4
+---PAGE 14 (1677 chars)---
+CHAPTER 2
+LITERATURE SURVEY
+2.1 GENERAL
+The literature survey reviews research related to online examination monitoring,
+automated cheating detection, computer vision, behavioural analysis, video anomaly detection
+and digital proctoring. The selected twenty studies cover screenshot-based monitoring, deep-
+learning models, facial and gaze analysis, assessment-log classification, multi-camera systems,
+student acceptance and privacy-preserving video analysis. The findings help identify the
+strengths and limitations of existing approaches and provide the basis for the proposed
+integrated and explainable online examination monitoring system.
+2.2 REVIEW OF LITERATURE: ONLINE EXAMINATION MONITORING
+Manit Malhotra and Indu Chhabra (2026) [1] presented a decade-long systematic
+review of automated online exam proctoring and academic integrity. The authors synthesised
+80 peer-reviewed studies published between 2014 and 2024, focusing on machine-learning and
+deep-learning methods, system reliability and hardware limitations. The review reports that
+CNNs and RNNs can analyse visual cues such as eye movement, head posture and facial
+expressions to support automated examination monitoring.
+Muhammad Ramzan et al. (2024) [2] investigated pre-trained CNN models for
+detecting abnormal activities in online examinations. The researchers extracted motion-based
+key frames from exam videos and trained models to classify four common cheating activities.
+They created a dataset of examination behaviours and compared different deep-learning
+approaches. The YOLOv5 model performed better than the other evaluated pre-trained and
+fine-tuned models for unusual-activity detection.
+5
+---PAGE 15 (2426 chars)---
+Yemeng Liu et al. (2024) [3] proposed CHEESE, a multiple-instance learning
+framework for cheating detection and localisation in online examinations. It combines body
+posture and background information with eye gaze, head pose and facial features. A
+spatiotemporal graph module analyses changes in these features across video clips.
+Experiments on the OEP dataset achieved a frame-level AUC of 87.58%, demonstrating the
+value of combining multiple behavioural cues.
+Chirag S. Indi et al. (2021) [4] developed an e-exam malpractice detection system using
+head-pose and gaze estimation. The system measures a student's visual focus of attention using
+webcam video and alerts the examiner when attention moves away from the screen beyond a
+predefined threshold. Suspicious video segments are saved for manual review, allowing the
+examiner to distinguish possible malpractice from temporary inattention. The reported
+attention-classification accuracy was 96.04%.
+Chia-Yuan Chuang et al. (2017) [5] studied probable cheating detection using
+response-time delay and head pose during online assessments. Their analysis found a statistical
+relationship between cheating behaviour, time delay and changes in head orientation relative
+to the computer screen. These two measures were used as predictors in a logistic model, which
+achieved an average prediction accuracy of 75.6%. The system can flag suspicious behaviour
+for review by online exam proctors.
+Dilky Felsinger et al. (2024) [6] explored video-based action detection for online exam
+proctoring in settings with limited resources. Instead of relying on separately engineered
+features, the approach recognises candidate actions directly from webcam recordings. The
+study used annotated videos from 24 test-takers performing exam-related actions. Its SlowOnly
+deep-learning model achieved a true detection rate of 78.9%, while visual summaries helped
+invigilators review recordings faster.
+Yuda Sukmana et al. (2025) [7] examined trustworthiness in BYOD online exams
+through smartphone screenshots. The study developed an automated screen-capture system for
+Android-based learning platforms and compared periodic, event-driven and combined capture
+methods. A five-second periodic capture interval was identified as the best configuration. The
+collected screenshots were labelled to identify possible dishonest actions such as web
+searching, opening webpages and using AI tools.
+6
+---PAGE 16 (2434 chars)---
+Shengnan Han et al. (2024) [8] conducted a systematic literature review of digital
+proctoring in higher education. Using an adapted PRISMA process and topic modelling, the
+authors analysed 154 relevant publications from seven databases. The review identified themes
+including cheating detection, student authentication, adoption barriers and student
+performance in different proctoring environments. It also discussed implications and future
+research needs for digital examinations.
+Fakhroddin Noorbehbahani et al. (2022) [9] reviewed research on cheating in online
+examinations published from 2010 to 2021. The study analysed 58 publications and organised
+the literature around motivations, forms of cheating, detection techniques and prevention
+methods. It identified research trends and presented an overview of how online academic
+dishonesty has been investigated. The review serves as a reference for developing methods to
+mitigate, detect and prevent online cheating.
+Seife Dendir and R. Stockton Maxwell (2020) [10] examined cheating in online courses
+using evidence from online proctoring. The study focuses on the relationship between remote
+examination monitoring and academic dishonesty in online courses. Its findings provide
+evidence relevant to understanding how proctoring records can be used when examining
+possible cheating in online assessments. This work supports the importance of evaluating
+examination integrity in remotely delivered courses.
+Manika Garg and Anita Goel (2023) [11] proposed a machine-learning approach to
+preserve integrity in online assessments by analysing student assessment log files. The
+researchers engineered thirteen features and compared five classification algorithms with two
+feature-selection methods. The Random Forest model using features selected by Mutual
+Information achieved about 85% accuracy. The study shows that assessment activity logs can
+help identify possible internet-based cheating.
+Zuhui Hu et al. (2024) [12] proposed a multi-perspective paperless examination
+cheating-detection system based on image recognition. It uses overhead, horizontal and face-
+camera views to widen the monitoring area and combines gaze recognition, cheating- tool
+detection and behaviour classification. An adaptive selection method reduces processing
+requirements while maintaining broad visual coverage. The system achieved 35 frames per
+second and an average recognition rate of 95%.
+7
+---PAGE 17 (2444 chars)---
+P. Tejaswi et al. (2023) [13] introduced Proctor Net, an AI framework for suspicious-
+activity detection in online proctored examinations. It monitors examinee identity, eye gaze
+and mouth opening from live video. Face recognition, facial landmarks and head-pose
+measurements are used to identify behavioural deviations, while mouth aspect ratio helps
+detect speaking. The framework reported 91% accuracy and generates alerts for the proctor
+when suspicious activity is detected.
+Sanaa Kaddoura and Abdu Gumaei (2022) [14] developed a deep-learning approach
+for detecting cheating in online exams. The system analyses recorded video frames and speech
+through three modules: front-camera monitoring, back-camera monitoring and speech
+detection. Deep CNNs extract visual features, while a Gaussian-based DFT method analyses
+speech information. The approach was evaluated using audio and video samples of different
+cheating behaviours to assess its detection effectiveness.
+M. Mutawa and Sai Sruthi (2022) [15] studied students' acceptance of online proctoring
+during the COVID-19 lockdown at Kuwait University. The researchers surveyed 478 college
+students and evaluated AI proctoring, live-human proctoring and blended proctoring using an
+extended Technology Acceptance Model. The responses were analysed with partial least
+squares structural equation modelling. Students reported greater satisfaction with live-human
+and blended proctoring than AI proctoring alone.
+Bharathkumar Ramachandra et al. (2022) [16] surveyed methods for single-scene video
+anomaly detection. The article reviews problem formulations, publicly available datasets and
+evaluation criteria used in this research area. It organises earlier methods into a taxonomy and
+compares algorithm performance on standard test datasets. The authors also discuss good
+practices and possible future directions. This survey provides a foundation for analysing
+unusual events in video streams.
+Huu-Thanh Duong et al. (2023) [17] reviewed deep-learning techniques for anomaly
+detection in video surveillance. The study categorises approaches according to their objectives
+and learning strategies, and discusses preprocessing and feature-engineering techniques. It also
+describes benchmark datasets used to train and evaluate systems that detect abnormal human
+behaviour. The review identifies common challenges and future directions for developing more
+effective video-analysis methods.
+8
+---PAGE 18 (2191 chars)---
+Yau Alhaji Samaila et al. (2024) [18] reviewed issues and future prospects in video
+anomaly detection. The study examined research published between 2003 and 2023 and
+analysed trends, techniques, datasets and frameworks used to identify anomalous actions. It
+highlights challenges such as real-time detection, multi-camera analysis and privacy
+preservation. These findings are relevant to examinations, where the same head movement
+may have more than one possible interpretation.
+Runyu Jiao et al. (2023) [19] surveyed video anomaly detection in dynamic scenes
+recorded by moving cameras. The review examines research challenges that differ from fixed-
+camera surveillance and discusses applications in security, transportation and marine
+environments. It also summarises 25 public datasets and groups existing methods into five
+main categories. The authors identify limitations and future research directions for detecting
+anomalies in moving-camera videos.
+Yang Liu et al. (2026) [20] reviewed privacy-preserving video anomaly detection
+methods. The study explains how surveillance videos may expose personally identifiable
+information and raise ethical and privacy concerns. It organises existing approaches by their
+data, feature and system-level privacy strategies, compares their strengths and limitations, and
+identifies open challenges. The review emphasises privacy-aware design for practical video-
+analysis systems.
+2.3 RESEARCH GAP
+Gap 1 – Limited integration of monitoring sources. The reviewed studies examine
+different sources, including smartphone screenshots [1], examination video [2], facial and gaze
+information [3], [4], [11], [12], audio [12] and assessment logs [10]. These methods are often
+developed as separate solutions. The proposed system combines webcam observations with
+supported browser events and microphone-based audio activity indicators within a single
+authenticated examination session.
+Gap 2 – Need for contextual behavioural assessment. Head movement, gaze deviation,
+speaking activity or an unusual video event may occur during normal examination behaviour
+[4], [5], [11], [12]. Existing studies demonstrate useful detection methods, but individual
+9
+---PAGE 19 (1722 chars)---
+indicators may not be sufficient to establish malpractice. The proposed system considers event
+confidence, frequency, duration and relationships before assigning a risk category.
+Gap 3 – Need for explainable and human-reviewed alerts. Several approaches generate
+alerts or identify suspicious video segments [3], [4], [11], while assessment-log and screenshot
+methods provide different forms of digital evidence [7], [10]. The proposed platform records
+event categories, timestamps, confidence values and supporting evidence so that faculty
+members can understand and verify alerts. Automated risk scores are treated as decision-
+support information rather than conclusive proof.
+Gap 4 – Privacy, usability and practical deployment. Research on student acceptance
+identifies the importance of trust and satisfaction [14], while video-anomaly reviews discuss
+privacy and deployment challenges [18]–[20]. Multi-camera and deep-learning systems may
+also require additional hardware and computational resources [11], [12]. The proposed system
+is therefore designed around commonly available webcam and microphone inputs, controlled
+access to monitoring records and faculty verification of flagged events.
+Overall, the reviewed literature shows that computer vision, deep learning, behavioural
+indicators and digital activity records can contribute to online examination integrity. However,
+an effective platform must combine relevant monitoring sources, distinguish ordinary
+behaviour from potentially suspicious events, explain the basis of alerts and protect student
+privacy. These requirements form the foundation of the proposed NextGen AI Online Exam
+Cheating Detection System using Computer Vision and Explainable AI.
+10
+---PAGE 20 (1619 chars)---
+CHAPTER 3
+EXISTING SYSTEM AND METHODOLOGY
+3.1 GENERAL
+This chapter describes the existing visual approach used as the main reference for the
+project. It outlines the base paper, input data, processing stages, algorithm and output, followed
+by the major limitations that motivate the proposed system.
+3.2 EXISTING SYSTEM
+The existing system considered in this project is the CHEESE framework proposed by
+Yemeng Liu et al. (2024) [3]. It uses Multiple Instance Learning (MIL) to detect and localise
+potential cheating activities in online examinations. Rather than classifying only one frame,
+the framework analyses groups of visual instances and considers gaze direction, head posture,
+facial information, body posture and background context.
+The approach uses examination video as its primary input. Relevant frames are
+extracted and prepared for visual feature analysis. The extracted characteristics are examined
+together so that a sequence of observations can contribute to identifying a suspicious segment.
+The resulting locations in the video are then available for examiner verification.
+3.2 EXISTING METHODOLOGY
+1. Video input collection: examination recordings are obtained from a camera and contain the
+student and surrounding environment.
+2. Frame extraction and preprocessing: relevant frames are selected and prepared for feature
+analysis.
+3. Visual feature extraction: facial information, gaze direction, head posture, body posture and
+background details are examined.
+4. Multiple Instance Learning: groups of visual instances are analysed to learn patterns
+associated with possible suspicious activity.
+11
+---PAGE 21 (685 chars)---
+5. Detection and localisation: potentially suspicious activities and the corresponding video
+segments are identified.
+6. Output generation: flagged segments are presented for examiner review and verification.
+Dataset and Algorithm
+The CHEESE framework is described as using the Online Exam Proctoring (OEP)
+dataset. Its principal method is Multiple Instance Learning, which aggregates information from
+multiple visual indicators. The reported frame-level Area Under the Curve (AUC) is 87.58%.
+AUC measures separation across decision thresholds and must not be interpreted as
+classification accuracy.
+BLOCK DIAGRAM OF THE EXISTING SYSTEM
+Fig. 3.1 Block Diagram of the Existing System
+12
+---PAGE 22 (1224 chars)---
+3.2.1 DRAWBACKS
+• Limited monitoring sources: the approach mainly analyses examination video and does not
+include browser events such as tab switching, window-focus changes or copy-paste actions.
+• Possibility of false alerts: normal gaze changes, head movement and posture changes may
+be misinterpreted without sufficient context.
+• Computational complexity: analysing several visual features with deep-learning methods
+may require processing resources that are unavailable on some student devices.
+• Limited behavioural context: one indicator may be insufficient; frequency, duration,
+sequence and combinations of events should also be considered.
+• Limited explainability: a suspicious video segment does not always explain why it was
+flagged. Reviewers need timestamps, supporting evidence and understandable risk factors.
+• Absence of integrated examination automation: the base approach does not provide a
+complete workflow combining authentication, examination management, browser
+monitoring, risk assessment and faculty reporting.
+These limitations motivate the proposed integration of multiple monitoring sources,
+contextual event scoring and explainable evidence generation within a single examination
+platform.
+13
+---PAGE 23 (1448 chars)---
+CHAPTER 4
+PROJECT PROGRESS AND IMPLEMENTATION PLAN
+4.1 GENERAL
+This chapter presents the proposed NextGen AI Online Exam Cheating Detection
+System using Computer Vision and Explainable AI. It describes the workflow, advantages,
+architecture, hardware and software requirements, six functional modules and the overall flow
+chart.
+4.2 PROPOSED SYSTEM
+The proposed platform extends video-only monitoring by combining YOLOv8-based
+object and person detection, MediaPipe facial landmark analysis, browser activity monitoring,
+microphone-based audio activity indicators, context-aware behavioural analysis and
+Explainable AI. React.js provides the user interface, Python FastAPI provides backend
+services, and MongoDB stores examination and monitoring records.
+Stage 1 – Student Authentication and Examination Input
+A student logs in with valid credentials and selects an assigned examination. The
+platform displays instructions and requests permission to access the webcam and microphone.
+Student details, examination information and a session identifier are associated with the
+monitoring session.
+Stage 2 – Multi-Source Data Collection and Preprocessing
+OpenCV captures and prepares webcam frames. The platform records supported
+browser events, including tab switching, window-focus changes and copy-paste actions, and
+obtains microphone-based audio activity indicators. Each event is timestamped and associated
+with the active examination session.
+14
+---PAGE 24 (1924 chars)---
+Stage 3 – Computer Vision Analysis
+MediaPipe identifies facial landmarks and supports facial orientation, gaze-related and
+head-pose analysis. YOLOv8 detects objects and persons and returns class labels, bounding
+boxes and confidence values. A detection is considered when its confidence C meets the
+configured threshold C ≥ T_c; the threshold is calibrated during implementation and testing.
+Stage 4 – Browser and Behavioural Event Analysis
+Visual observations and browser records are converted into categorised events. The
+system considers repeated gaze deviations, unusual head movements, additional-person
+detection, unauthorised-object detection, face absence, tab switching, window-focus changes
+and copy-paste activity. Confidence, frequency, duration and relationships are considered
+together.
+Stage 5 – Context-Aware Risk Assessment and Explainable AI
+A weighted risk score is calculated from detected events. Configurable thresholds
+classify the result as Low, Medium or High risk. The XAI component lists contributing event
+types, timestamps, confidence information and supporting evidence. Weights, thresholds and
+normalisation values are to be calibrated during testing.
+Stage 6 – Data Storage, Faculty Dashboard and Reporting
+MongoDB stores session details, monitoring events, risk scores and explanations.
+FastAPI exposes backend endpoints, and the React.js faculty dashboard retrieves records for
+authorised review. Faculty members inspect alerts and evidence and generate monitoring
+reports. The final decision remains with the faculty member.
+4.2.1 ADVANTAGES
+• Combines webcam observations, microphone activity indicators and browser events.
+• Uses YOLOv8 and MediaPipe for object, person, facial-landmark and head-pose analysis.
+• Considers event confidence, frequency, duration and combinations instead of isolated
+actions.
+• Organises alerts into configurable low-, medium- and high-risk categories.
+15
+---PAGE 25 (740 chars)---
+• Provides timestamps, contributing factors and evidence for understandable review.
+• Stores monitoring records centrally and supports faculty review and report generation.
+4.3 SYSTEM ARCHITECTURE
+Fig. 4.1 System Architecture of the Proposed System
+The architecture begins with student authentication and examination management.
+Webcam, microphone, browser and session information follow separate input paths. OpenCV
+prepares video frames; MediaPipe and YOLOv8 analyse visual data; browser and audio events
+are recorded with timestamps. Event aggregation feeds behavioural analysis and risk
+assessment. Explainable AI prepares the reasons and evidence, while MongoDB stores records
+for the faculty dashboard and report-generation module.
+16
+---PAGE 26 (1133 chars)---
+4.4 HARDWARE AND SOFTWARE SPECIFICATIONS
+The system is designed to run on a standard computer with a webcam, microphone and
+internet access. A dedicated GPU is optional for the basic implementation, although it may
+improve video-processing and inference speed.
+Table 4.1 Hardware Requirements
+Recommended
+Hardware Component Minimum Requirement
+Requirement
+Processor Intel Core i3 or equivalent Intel Core i5 or above
+RAM 8 GB 16 GB
+Storage 256 GB SSD 512 GB SSD
+Webcam 720p webcam 1080p HD webcam
+External or noise-reduced
+Microphone Built-in microphone
+microphone
+Stable broadband
+Network Interface Wi-Fi or Ethernet
+connection
+Display 1366 × 768 resolution Full HD display
+Table 4.2 Software Requirements
+Software / Technology Version / Platform Purpose
+Operating System Windows 10/11 or Linux Development environment
+Programming Language Python 3.11 Backend and AI processing
+Frontend Language JavaScript User interface development
+Interactive examination and
+Frontend Framework React.js
+faculty interface
+REST API and backend
+Backend Framework FastAPI
+services
+Video capture and frame
+Computer Vision Library OpenCV
+processing
+17
+---PAGE 27 (1879 chars)---
+Facial landmark and head-
+Face Analysis Library MediaPipe
+pose analysis
+Object Detection YOLOv8 Object and person detection
+Examination and monitoring
+Database MongoDB
+data storage
+API Testing Tool Postman API testing and validation
+The listed languages, frameworks and libraries support the web interface, backend
+services, computer-vision processing, API testing and data storage. Their use is subject to the
+relevant software licence terms.
+4.5 MODULE DESCRIPTION
+Module 1 – Student Authentication and Examination Management
+Purpose: provide secure student login and access to the assigned examination. Inputs
+include student credentials, student details and examination information. The backend
+validates credentials and associates the student with the selected examination. After
+authentication, instructions are displayed and a monitoring session is created. The expected
+outputs are an authenticated session, examination access and a session identifier.
+Implementation and validation are in progress.
+Module 2 – Multi-Source Data Collection and Preprocessing
+Purpose: collect and prepare examination inputs from webcam, microphone and
+browser activity. Inputs include webcam frames, microphone activity, browser events and
+session metadata. OpenCV acquires and preprocesses frames; browser events such as tab
+switching, focus changes and copy-paste attempts are recorded; microphone input provides
+audio activity indicators. The output is a timestamped, session-linked set of inputs for later
+analysis. Integration and validation are in progress.
+Module 3 – Computer Vision-Based Face and Object Detection
+Purpose: analyse the student’s face, gaze direction, head movement and objects visible
+in webcam frames. MediaPipe is used for facial landmark and orientation analysis, while
+OpenCV supports image processing. YOLOv8 detects objects and persons and returns labels,
+18
+---PAGE 28 (1910 chars)---
+bounding boxes and confidence scores. The configurable confidence condition is C ≥ T_c. The
+module supplies visual indicators for behavioural analysis; model validation and detection
+evidence are to be documented during testing.
+Module 4 – Browser and Behavioural Activity Analysis
+Purpose: combine visual observations and browser records into timestamped
+suspicious-activity events. The module considers repeated gaze deviations, unusual head
+movements, additional-person and unauthorised-object detections, face absence, tab switching,
+window-focus changes and copy-paste actions. Event frequency and duration are evaluated so
+that one isolated observation does not determine the result. The structured event output is
+passed to risk assessment. Integration and testing are in progress.
+Module 5 – Risk Assessment and Explainable AI
+Purpose: calculate the examination risk level and provide understandable explanations.
+Inputs are categorised events, confidence, frequency and duration. The weighted score is: R =
+Σ (wᵢ × cᵢ × fᵢ × dᵢ). Here, wᵢ is the event weight, cᵢ is detection confidence, fᵢ is event frequency
+and dᵢ is the duration factor. Low Risk is R < T₁; Medium Risk is T₁ ≤ R < T₂; High Risk is R
+≥ T₂. Weights and thresholds are configurable and must be calibrated using test data. XAI
+presents the factors that contributed to each alert, along with timestamps and supporting
+evidence.
+Module 6 – Database, Faculty Dashboard and Report Generation
+Purpose: store examination-monitoring information and present it to authorised faculty
+members. MongoDB stores student details, examination sessions, event records and risk
+assessments. The React.js dashboard retrieves information through FastAPI endpoints and
+displays suspicious-activity alerts, explanations and examination records. Faculty members
+can review evidence and generate reports. The final decision is made by the faculty member.
+19
+---PAGE 29 (327 chars)---
+4.6 FLOW CHART
+Fig. 4.2 Flow Chart of the Proposed System
+The workflow starts with student login and credential validation. Valid credentials
+allow examination selection; invalid credentials return a login error. The system requests
+webcam and microphone permissions and collects video, audio activity indicators and browser
+20
+---PAGE 30 (1832 chars)---
+events. OpenCV, MediaPipe and YOLOv8 process the inputs, after which events are
+aggregated and assessed. The risk category and explainable evidence are stored and displayed
+for faculty review and final decision.
+IMPLEMENTATION PLAN AND EVALUATION
+The current phase establishes the problem statement, literature review, research gaps,
+objectives, architecture, workflow and technology selection. The next phase will implement
+the six modules, integrate webcam and microphone acquisition, connect computer-vision
+models, capture supported browser events and link all events to an authenticated examination
+session.
+Testing will include normal and suspicious examination scenarios under different
+lighting, camera positions, background conditions and network conditions. The review plan
+specifies 200 sessions, comprising 100 genuine and 100 suspicious sessions. The proposed
+baselines are an existing AI-proctoring approach and YOLOv8-based detection. The planned
+measures are accuracy, precision, recall and F1-score; false-positive rate and processing
+latency may also be documented during testing.
+The target values recorded for review are 96.8% accuracy, 95.9% precision, 96.2%
+recall and 96.0% F1-score. These values are expected targets only and must not be reported as
+achieved results until experiments are completed. The project will document actual results,
+model behaviour, false alerts and processing performance after validation.
+The monitoring platform must request user permission for webcam and microphone
+access, restrict records to authorised users and handle recorded evidence responsibly. Normal
+student behaviour can resemble suspicious activity, and browser monitoring is limited to events
+available to the application. Automated risk scores are decision-support indicators; faculty
+verification is mandatory.
+21
+---PAGE 31 (1644 chars)---
+CHAPTER 5
+CONCLUSION
+5.1 CONCLUSION
+The NextGen AI Online Exam Cheating Detection System using Computer Vision and
+Explainable AI is proposed to support fair and transparent online examination monitoring. It
+combines webcam and microphone inputs, YOLOv8 and MediaPipe visual analysis, browser
+activity tracking, context-aware behavioural assessment and evidence-based explanations. The
+design addresses limitations of video-only systems by considering multiple sources and
+evaluating event confidence, frequency, duration and relationships.
+During this phase, the project requirements, problem statement, literature survey,
+research gaps, system architecture and workflow were prepared. Six modules were defined:
+student authentication and examination management; multi-source data collection and
+preprocessing; computer-vision-based face and object detection; browser and behavioural
+activity analysis; risk assessment and Explainable AI; and database management with faculty
+dashboard and report generation. The selected stack includes React.js, Python FastAPI,
+MongoDB, OpenCV, MediaPipe and YOLOv8.
+The evaluation plan covers 200 sessions and comparison with two baseline approaches.
+The stated values of 96.8% accuracy, 95.9% precision, 96.2% recall and 96.0% F1-score are
+targets that remain to be validated. The next phase will implement and integrate the modules,
+collect test data, calibrate risk thresholds, evaluate performance and document measured
+results. The completed platform is intended to assist faculty members through explainable
+alerts and supporting evidence, while the final judgement remains under human supervision.
+22
+---PAGE 32 (787 chars)---
+APPENDIX
+Appendix A – Suspicious Behaviour Event Logging Code
+This example demonstrates how detected events can be recorded with timestamps for
+later review. In the complete system, actual detection modules would generate the events.
+from datetime import datetime
+import json
+event_log = []
+def record_event(event_type, details,
+risk_level="Medium"):
+event = {
+"timestamp": datetime.now().isoformat(),
+"event_type": event_type,
+"details": details,
+"risk_level": risk_level
+}
+event_log.append(event)
+print("Event recorded:")
+print(json.dumps(event, indent=4))
+record_event(
+"Multiple Faces",
+"More than one face detected",
+"High"
+)
+record_event(
+"Looking Away",
+"Repeated head movement detected",
+"Low"
+)
+with open("exam_events.json", "w") as file:
+json.dump(event_log, file, indent=4)
+23
+---PAGE 33 (765 chars)---
+Appendix B – Context-Aware Risk Scoring Code
+The following sample demonstrates a simple rule-based risk scoring method. It
+combines event scores to produce a risk category. These example values are illustrative and
+must be calibrated and evaluated using actual examination data.
+def calculate_risk(events):
+score = 0
+weights = {
+"looking_away": 1,
+"multiple_faces": 4,
+"unauthorized_object": 3,
+"tab_switch": 2,
+"face_missing": 3
+}
+for event in events:
+score += weights.get(event, 0)
+if score >= 7:
+level = "High"
+elif score >= 3:
+level = "Medium"
+else:
+level = "Low"
+return {
+"risk_score": score,
+"risk_level": level
+}
+detected_events = [
+"looking_away",
+"tab_switch",
+"multiple_faces"]
+result = calculate_risk(detected_events)
+print("Risk Assessment:", result)
+24
+---PAGE 34 (805 chars)---
+Appendix C – Explainable AI Event Explanation
+This example generates a simple explanation for a recorded event. In the complete
+system, explanations should be based on evidence from actual detection results and the context
+of the examination.
+def explain_event(event_type, confidence):
+explanations = {
+"multiple_faces":
+"More than one face was detected.",
+"looking_away":
+"Repeated gaze or head movement was observed.",
+"unauthorized_object":
+"An object requiring examination review was
+detected.",
+"face_missing":
+"The student's face was not detected in the frame.",
+"tab_switch":
+"A browser tab-switching event was recorded."
+}
+explanation = explanations.get(
+event_type,
+"An event requiring review was recorded."
+)
+return {
+"event": event_type,
+"confidence": confidence,
+"explanation": explanation,
+25
+---PAGE 35 (1908 chars)---
+REFERENCES
+[1] Yuda Sukmana, I. Gusti Bagus Baskara Nugraha, and Yusep Rosmansyah, “Evaluating
+Trustworthiness in BYOD Online Exams via Smartphone Screenshots,” IEEE Access,
+vol. 13, 2025.
+[2] Muhammad Ramzan, Adnan Abid, Muhammad Bilal, Khalid M. Aamir, Sufyan A.
+Memon, and Tae-Sun Chung, “Effectiveness of Pre-Trained CNN Networks for
+Detecting Abnormal Activities in Online Exams,” IEEE Access, vol. 12, 2024.
+[3] Yemeng Liu, Jing Ren, Jianshuo Xu, Xiaomei Bai, Roopdeep Kaur, and Feng Xia,
+“Multiple Instance Learning for Cheating Detection and Localization in Online
+Examinations,” IEEE Transactions on Cognitive and Developmental Systems, vol. 16,
+no. 4, 2024.
+[4] Chirag S. Indi, Varun Pritham, Vasundhara Acharya, and Krishna Prakasha, “Detection of
+Malpractice in E-exams by Head Pose and Gaze Estimation,” International Journal of
+Emerging Technologies in Learning, vol. 16, no. 8, 2021.
+[5] Chia-Yuan Chuang, Scotty D. Craig, and John Femiani, “Detecting Probable Cheating
+During Online Assessments Based on Time Delay and Head Pose,” Higher Education
+Research & Development, vol. 36, no. 6, 2017.
+[6] Dilky Felsinger, Thilina Halloluwa, and Ishani Fonseka, “Video Based Action Detection
+for Online Exam Proctoring in Resource-Constrained Settings,” Education and
+Information Technologies, vol. 29, 2024.
+[7] Manit Malhotra and Indu Chhabra, “Ensuring Academic Integrity Through Automated
+Online Exam Proctoring: A Decade-Long Systematic Review,” Discover Education, vol.
+5, 2026.
+[8] Shengnan Han, Shahrokh Nikou, and Workneh Yilma Ayele, “Digital Proctoring in Higher
+Education: A Systematic Literature Review,” International Journal of Educational
+Management, vol. 38, no. 1, 2024.
+[9] Fakhroddin Noorbehbahani, Azadeh Mohammadi, and Mohammad Aminazadeh, “A
+Systematic Review of Research on Cheating in Online Exams from 2010 to 2021,”
+Education and Information Technologies, vol. 27, 2022.
+26
+---PAGE 36 (2196 chars)---
+[10] Seife Dendir and R. Stockton Maxwell, “Cheating in Online Courses: Evidence from
+Online-Proctoring,” Computers in Human Behavior Reports, vol. 2, 2020.
+[11] Manika Garg and Anita Goel, “Preserving Integrity in Online Assessment Using Feature
+Engineering and Machine Learning,” Expert Systems with Applications, vol. 225, 2023.
+[12] Zuhui Hu, Yaguang Jing, Guoqing Wu, and Han Wang, “Multi-Perspective Adaptive
+Paperless Examination Cheating Detection System Based on Image Recognition,”
+Applied Sciences, vol. 14, no. 10, 2024.
+[13] P. Tejaswi, S. Venkatramaphanikumar, and K. Venkata Krishna Kishore, “Proctor Net:
+An AI Framework for Suspicious Activity Detection in Online Proctored Examinations,”
+Measurement, vol. 206, 2023.
+[14] Sanaa Kaddoura and Abdu Gumaei, “Towards Effective and Efficient Online Exam
+Systems Using Deep Learning-Based Cheating Detection Approach,” Intelligent
+Systems with Applications, vol. 16, 2022.
+[15] M. Mutawa and Sai Sruthi, “Students’ Perspective Towards Online Proctoring in Exams
+During COVID-19,” Journal of Engineering Research, vol. 10, no. 4A, 2022.
+[16] Bharathkumar Ramachandra, Michael J. Jones, and Ranga Raju Vatsavai, “A Survey of
+Single-Scene Video Anomaly Detection,” IEEE Transactions on Pattern Analysis and
+Machine Intelligence, vol. 44, no. 5, 2022.
+[17] Huu-Thanh Duong, Viet-Tuan Le, and Vinh Truong Hoang, “Deep Learning-Based
+Anomaly Detection in Video Surveillance: A Survey,” Sensors, vol. 23, no. 11, 2023.
+[18] Yau Alhaji Samaila, Patrick Sebastian, Narinderjit Singh Sawaran Singh, Aliyu Nuhu
+Shuaibu, Syed Saad Azhar Ali, Temitope Ibrahim Amosa, Ghulam E. Mustafa Abro, and
+Isiaka Shuaibu, “Video Anomaly Detection: A Systematic Review of Issues and
+Prospects,” Neurocomputing, vol. 591, 2024.
+[19] Runyu Jiao, Yi Wan, Fabio Poiesi, and Yiming Wang, “Survey on Video Anomaly
+Detection in Dynamic Scenes with Moving Cameras,” Artificial Intelligence Review,
+vol. 56, 2023.
+[20] Yang Liu, Siao Liu, Xiaoguang Zhu, Hao Yang, Jielin Guo, Liangyu Teng, Dingkang
+Yang, Yan Wang, and Jing Liu, “Privacy-Preserving Video Anomaly Detection: A
+Survey,” IEEE Transactions on Neural Networks and Learning Systems, vol. 37, no. 1,
+2026.
+27

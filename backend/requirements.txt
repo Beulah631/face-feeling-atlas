@@ -1,0 +1,28 @@
+# FastAPI Backend Core Dependencies
+fastapi>=0.110.0
+uvicorn[standard]>=0.28.0
+pydantic>=2.6.0
+python-multipart>=0.0.9
+pillow>=10.0.0
+numpy>=1.24.0
+torch>=2.1.0
+torchvision>=0.16.0
+
+# -------------------------------------------------------------------------
+# Computer Vision & Deep Learning Dependencies
+# -------------------------------------------------------------------------
+# PyTorch and torchvision are declared above because both inference paths use
+# them. Choose the matching PyTorch index below when installing a specific CUDA
+# build; otherwise pip resolves the platform's default build.
+#
+# Standard CPU installation:
+#   pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
+#   pip install ultralytics timm opencv-python
+#
+# GPU (CUDA 12.1) installation:
+#   pip install torch torchvision --index-url https://download.pytorch.org/whl/cu121
+#   pip install ultralytics timm opencv-python
+# -------------------------------------------------------------------------
+ultralytics>=8.1.0
+timm>=0.9.12
+opencv-python>=4.9.0
