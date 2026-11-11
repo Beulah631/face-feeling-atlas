@@ -55,7 +55,7 @@ function Metrics() {
 
   useEffect(() => {
     const fetchMetrics = async () => {
-      const url = settings.backendUrl || "http://127.0.0.1:8000";
+      const url = settings.backendUrl;
       try {
         const res = await fetch(`${url.replace(/\/$/, "")}/api/evaluation-metrics`);
         if (res.ok) {

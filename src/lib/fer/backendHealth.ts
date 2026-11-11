@@ -21,7 +21,13 @@ export function normalizeBackendHealthUrl(backendUrl: string): string {
 
   let parsed: URL;
   try {
-    parsed = new URL(raw);
+    const isSameOriginPath = raw.startsWith("/");
+    if (!isSameOriginPath && !/^https?:\/\//i.test(raw)) {
+      throw new Error("Backend URL must be an absolute HTTP(S) URL or a same-origin path.");
+    }
+    const browserOrigin =
+      typeof window === "undefined" ? "http://localhost" : window.location.origin;
+    parsed = new URL(raw, browserOrigin);
   } catch {
     throw new Error("Enter a valid absolute backend URL, such as http://127.0.0.1:8000.");
   }

@@ -144,25 +144,35 @@ app = FastAPI(
     version="1.0.0",
 )
 
-# CORS setup for local development
+# Same-origin Vercel routing does not require CORS. Keep local origins for
+# development and allow explicit HTTPS frontend origins when the API is hosted
+# separately. Never use a wildcard with credentials enabled.
+LOCAL_CORS_ORIGINS = [
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+    "http://localhost:8080",
+    "http://127.0.0.1:8080",
+    "http://localhost:8081",
+    "http://127.0.0.1:8081",
+    "http://localhost:8082",
+    "http://127.0.0.1:8082",
+    "http://localhost:8083",
+    "http://127.0.0.1:8083",
+    "http://localhost:4173",
+    "http://127.0.0.1:4173",
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+]
+configured_cors_origins = [
+    origin.strip().rstrip("/")
+    for origin in os.environ.get("FER_CORS_ORIGINS", "").split(",")
+    if origin.strip() and origin.strip() != "*"
+]
+CORS_ORIGINS = list(dict.fromkeys([*LOCAL_CORS_ORIGINS, *configured_cors_origins]))
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:5173",
-        "http://127.0.0.1:5173",
-        "http://localhost:8080",
-        "http://127.0.0.1:8080",
-        "http://localhost:8081",
-        "http://127.0.0.1:8081",
-        "http://localhost:8082",
-        "http://127.0.0.1:8082",
-        "http://localhost:8083",
-        "http://127.0.0.1:8083",
-        "http://localhost:4173",
-        "http://127.0.0.1:4173",
-        "http://localhost:3000",
-        "http://127.0.0.1:3000",
-    ],
+    allow_origins=CORS_ORIGINS,
     allow_credentials=True,
     allow_methods=["GET", "POST", "DELETE", "OPTIONS"],
     allow_headers=["Content-Type"],

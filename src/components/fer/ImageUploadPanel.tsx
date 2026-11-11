@@ -22,6 +22,7 @@ import type { ModelComparisonResult } from "@/lib/fer/emotionService";
 import { EMOTION_META } from "@/lib/fer/emotionMeta";
 import { EMOTIONS, type BoundingBox, type Emotion } from "@/lib/fer/types";
 import { announceEmotion, cancelVoiceAnnouncements } from "@/lib/fer/voiceAnnouncements";
+import { prepareImagePayload } from "@/lib/fer/imagePayload";
 import { Chip, Panel } from "./ui";
 
 interface AnalysisResult {
@@ -199,9 +200,10 @@ export function ImageUploadPanel() {
     }
 
     try {
+      const inferenceImage = await prepareImagePayload(imageDataUrl);
       // Step 1: Real YOLOv8 Face Detection
       const detection = await emotionService.detectFace({
-        frameDataUrl: imageDataUrl,
+        frameDataUrl: inferenceImage,
         backendUrl,
         demoMode: false,
       });

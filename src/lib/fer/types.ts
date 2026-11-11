@@ -107,13 +107,17 @@ export interface Settings {
   voiceConfidenceThreshold: number;
 }
 
+const configuredBackendUrl = import.meta.env["VITE_BACKEND_URL"]?.trim();
+
 export const DEFAULT_SETTINGS: Settings = {
   demoMode: false,
   alertsEnabled: true,
   confidenceThreshold: 80,
   consecutiveObservations: 3,
   cameraDeviceId: "",
-  backendUrl: "http://127.0.0.1:8000",
+  // Vercel Services routes the API through the same origin. Keep local
+  // development on the standalone FastAPI port unless explicitly overridden.
+  backendUrl: configuredBackendUrl || (import.meta.env.PROD ? "/" : "http://127.0.0.1:8000"),
   intervalMs: 2500,
   voiceAnnouncementsEnabled: true,
   voiceName: "",

@@ -4,6 +4,7 @@ import { checkBackendHealth, normalizeBackendHealthUrl } from "../src/lib/fer/ba
 
 test("uses a normalized base URL and requires healthy plus ready", async () => {
   assert.equal(normalizeBackendHealthUrl(" http://127.0.0.1:8000/// "), "http://127.0.0.1:8000/health");
+  assert.equal(normalizeBackendHealthUrl("/"), "http://localhost/health");
   let requestedUrl = "";
   const result = await checkBackendHealth("http://127.0.0.1:8000/", {
     fetcher: async (url) => {

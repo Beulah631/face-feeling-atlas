@@ -280,7 +280,7 @@ function SettingsPage() {
               <Chip tone="warning">Backend Offline</Chip>
             )
           }
-          footer="Set Backend base URL to your running FastAPI service (defaults to http://127.0.0.1:8000). Turn Demo Mode off to use real YOLOv8 and Swin Transformer weights."
+          footer="Use the local FastAPI URL during development. Vercel Services defaults to the same-origin API route; set VITE_BACKEND_URL only when using a separately hosted backend. Turn Demo Mode off to use real model inference."
         >
           <label className="block text-sm">
             <span className="text-[11px] tracking-widest text-muted-foreground uppercase">

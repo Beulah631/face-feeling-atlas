@@ -8,6 +8,7 @@ import {
   type MultiFaceResponse,
 } from "@/lib/fer/extendedAnalysisService";
 import { EMOTIONS } from "@/lib/fer/types";
+import { prepareImagePayload } from "@/lib/fer/imagePayload";
 import { Chip, PageHeader, Panel } from "@/components/fer/ui";
 
 export const Route = createFileRoute("/multiple-faces")({ component: MultipleFacesPage });
@@ -73,7 +74,8 @@ function MultipleFacesPage() {
     setError(null);
     setResult(null);
     try {
-      setResult(await analyzeMultipleFaces(preview, model, settings.backendUrl));
+      const inferenceImage = await prepareImagePayload(preview);
+      setResult(await analyzeMultipleFaces(inferenceImage, model, settings.backendUrl));
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : "Multiple-face analysis failed.");
     } finally {
